@@ -10,7 +10,14 @@ function M:update(dt)
 end
 
 function M:draw()
-  love.graphics.draw(self.splash)
+  local windowWidth, windowHeight = love.graphics.getDimensions()
+  local splashWidth, splashHeight = self.splash:getDimensions()
+
+  local x = 0.5 * windowWidth
+  local y = 0.5 * windowHeight
+  local scale = windowHeight / splashHeight
+
+  love.graphics.draw(self.splash, x, y, 0, scale, scale, 0.5 * splashWidth, 0.5 * splashHeight)
 end
 
 function M:keypressed(key, scancode, isrepeat)
