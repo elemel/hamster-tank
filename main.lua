@@ -1,6 +1,7 @@
 local TitleScreen = require("sial.TitleScreen")
 
 function love.load()
+  love.window.setTitle("Stuck in a Loop")
   screen = TitleScreen.new()
 end
 
