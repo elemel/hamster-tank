@@ -40,6 +40,11 @@ local function decompose2(transform)
   return x, y, angle, scaleX, scaleY, 0, 0, shearX, shearY
 end
 
+local function normalize2(x, y)
+  local length = sqrt(x * x + y * y)
+  return x / length, y / length, length
+end
+
 local function removeLast(t, v)
   for i = #t, 1, -1 do
     if t[i] == v then
@@ -59,6 +64,7 @@ end
 
 return {
   decompose2 = decompose2,
+  normalize2 = normalize2,
   removeLast = removeLast,
   sign = sign,
   transformVector = transformVector,

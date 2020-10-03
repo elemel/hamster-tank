@@ -12,8 +12,8 @@ function M:init()
   self.cameraTransform = love.math.newTransform()
   self:resize(love.graphics.getDimensions())
 
-  self.world = love.physics.newWorld(0, 16)
-  self.body = love.physics.newBody(self.world, 0, 4)
+  self.world = love.physics.newWorld()
+  self.body = love.physics.newBody(self.world, 0, 8)
 
   local shape = love.physics.newRectangleShape(16, 1)
   self.fixture = love.physics.newFixture(self.body, shape)
@@ -23,7 +23,13 @@ function M:init()
   self.tanks = {}
   self.players = {}
 
-  local tank = Tank.new(self, {transform = love.math.newTransform()})
+  self.wheelRadius = 8
+  self.wheelGravity = 16
+
+  local tank = Tank.new(self, {
+    transform = love.math.newTransform(0, 4),
+  })
+
   Player.new(self, tank, {})
 end
 
@@ -43,6 +49,20 @@ function M:fixedUpdate(dt)
 
   for _, tank in ipairs(self.tanks) do
     tank:fixedUpdateControl(dt)
+  end
+
+  -- Gravity
+  for _, body in ipairs(self.world:getBodies()) do
+    if body:getType() == "dynamic" then
+      local x, y = body:getWorldCenter()
+      local downX, downY, distance = utils.normalize2(x, y)
+
+      if distance > 0 then
+        local mass = body:getMass()
+        local gravity = self.wheelGravity * distance / self.wheelRadius
+        body:applyForce(downX * mass * gravity, downY * mass * gravity)
+      end
+    end
   end
 
   self.world:update(dt)
