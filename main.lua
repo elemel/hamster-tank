@@ -1,7 +1,7 @@
 local TitleScreen = require("sial.TitleScreen")
 
 function love.load()
-  love.window.setTitle("Stuck in a Loop")
+  love.window.setTitle("Hamster Tank")
 
   love.window.setMode(800, 600, {
     resizable = true,
