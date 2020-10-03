@@ -29,7 +29,7 @@ function M:init(tank, config)
 
   local image = love.graphics.newImage("resources/images/hamster/paw.png")
   local imageWidth, imageHeight = image:getDimensions()
-  local scale = 1 / imageHeight
+  local scale = 1.125 / imageHeight
 
   self.sprite = Sprite.new(self.game, image, {
     localToWorld = {x, y, angle},

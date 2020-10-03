@@ -25,7 +25,44 @@ function M:init()
   self.wheelGravity = 32
 
   Terrain.new(self, {
+    radius = 0.875 * 0.875 * self.wheelRadius,
+    background = true,
+    color = {0.25, 0.25, 0.25, 1},
+
+    noise = {
+      originX = love.math.random() * 256,
+      originY = love.math.random() * 256,
+
+      amplitude = 0.875 * 8,
+      frequency = 1 / 0.875 / 0.875 * 1 / 32,
+    },
+  })
+
+  Terrain.new(self, {
+    radius = 0.875 * self.wheelRadius,
+    background = true,
+    color = {0.375, 0.375, 0.375, 1},
+
+    noise = {
+      originX = love.math.random() * 256,
+      originY = love.math.random() * 256,
+
+      amplitude = 0.875 * 8,
+      frequency = 1 / 0.875 * 1 / 32,
+    },
+  })
+
+  Terrain.new(self, {
     radius = self.wheelRadius,
+    color = {0.5, 0.5, 0.5, 1},
+
+    noise = {
+      originX = love.math.random() * 256,
+      originY = love.math.random() * 256,
+
+      amplitude = 8,
+      frequency = 1 / 32,
+    },
   })
 
   local tank = Tank.new(self, {
@@ -107,6 +144,10 @@ function M:draw()
     local _, _, _, scale = utils.decompose2(camera.interpolatedWorldToScreen)
     love.graphics.setLineWidth(1 / scale)
 
+    for _, terrain in ipairs(self.terrains) do
+      love.graphics.draw(terrain.mesh)
+    end
+
     for _, sprite in ipairs(self.sprites) do
       love.graphics.draw(sprite.image, sprite.interpolatedImageToWorld)
     end
@@ -120,7 +161,7 @@ function M:draw()
     love.graphics.replaceTransform(camera.worldToScreen)
     local _, _, _, scale = utils.decompose2(camera.worldToScreen)
     love.graphics.setLineWidth(1 / scale)
-    self:debugDrawPhysics()
+    -- self:debugDrawPhysics()
 
     love.graphics.pop()
   end
@@ -150,14 +191,14 @@ function M:debugDrawPhysics()
 
         love.graphics.line(previousX, previousY, firstX, firstY)
         love.graphics.line(lastX, lastY, nextX, nextY)
-      -- elseif shapeType == "circle" then
-      --   local x, y = body:getWorldPoint(shape:getPoint())
-      --   local radius = shape:getRadius()
-      --   love.graphics.circle("line", x, y, radius)
-      --   local directionX, directionY = body:getWorldVector(1, 0)
-      --   love.graphics.line(x, y, x + directionX * radius, y + directionY * radius)
-      -- elseif shapeType == "polygon" then
-      --   love.graphics.polygon("line", body:getWorldPoints(shape:getPoints()))
+      elseif shapeType == "circle" then
+        local x, y = body:getWorldPoint(shape:getPoint())
+        local radius = shape:getRadius()
+        love.graphics.circle("line", x, y, radius)
+        local directionX, directionY = body:getWorldVector(1, 0)
+        love.graphics.line(x, y, x + directionX * radius, y + directionY * radius)
+      elseif shapeType == "polygon" then
+        love.graphics.polygon("line", body:getWorldPoints(shape:getPoints()))
       end
     end
   end
