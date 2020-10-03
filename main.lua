@@ -1,4 +1,4 @@
-local TitleScreen = require("sial.TitleScreen")
+local TitleScreen = require("hamsterTank.TitleScreen")
 
 function love.load()
   love.window.setTitle("Hamster Tank")

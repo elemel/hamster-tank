@@ -1,8 +1,8 @@
-local Class = require("sial.Class")
-local Player = require("sial.Player")
-local Tank = require("sial.Tank")
-local Terrain = require("sial.Terrain")
-local utils = require("sial.utils")
+local Class = require("hamsterTank.Class")
+local Player = require("hamsterTank.Player")
+local Tank = require("hamsterTank.Tank")
+local Terrain = require("hamsterTank.Terrain")
+local utils = require("hamsterTank.utils")
 
 local M = Class.new()
 

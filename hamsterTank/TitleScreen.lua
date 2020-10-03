@@ -1,4 +1,4 @@
-local Class = require("sial.Class")
+local Class = require("hamsterTank.Class")
 
 local M = Class.new()
 
@@ -22,7 +22,7 @@ end
 
 function M:keypressed(key, scancode, isrepeat)
   if key == "return" then
-    local GameScreen = require("sial.GameScreen")
+    local GameScreen = require("hamsterTank.GameScreen")
     screen = GameScreen.new()
     return
   end

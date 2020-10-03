@@ -1,5 +1,5 @@
-local Class = require("sial.Class")
-local utils = require("sial.utils")
+local Class = require("hamsterTank.Class")
+local utils = require("hamsterTank.utils")
 
 local M = Class.new()
 

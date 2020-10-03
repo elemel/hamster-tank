@@ -1,6 +1,6 @@
-local Class = require("sial.Class")
-local utils = require("sial.utils")
-local Wheel = require("sial.Wheel")
+local Class = require("hamsterTank.Class")
+local utils = require("hamsterTank.utils")
+local Wheel = require("hamsterTank.Wheel")
 
 local M = Class.new()
 
