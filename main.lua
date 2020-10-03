@@ -12,6 +12,10 @@ function love.load()
   love.physics.setMeter(1)
   love.graphics.setBackgroundColor(0.25, 0.75, 1, 1)
   screen = TitleScreen.new()
+
+  local music = love.audio.newSource("resources/hamsterTank.ogg", "stream")
+  music:setLooping(true)
+  music:play()
 end
 
 function love.update(dt)
