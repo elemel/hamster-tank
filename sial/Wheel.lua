@@ -15,7 +15,7 @@ function M:init(tank, config)
   local shape = love.physics.newCircleShape(config.radius)
   self.fixture = love.physics.newFixture(self.body, shape)
   self.fixture:setGroupIndex(-self.tank.groupIndex)
-  self.fixture:setFriction(1)
+  self.fixture:setFriction(2)
 
   local axisX, axisY = utils.transformVector(config.transform, 0, -1)
   self.joint = love.physics.newWheelJoint(self.tank.body, self.body, x, y, axisX, axisY)
@@ -24,7 +24,7 @@ function M:init(tank, config)
   self.joint:setSpringDampingRatio(1)
 
   self.joint:setMotorEnabled(true)
-  self.joint:setMaxMotorTorque(16)
+  self.joint:setMaxMotorTorque(32)
 
   self.tank.wheels[#self.tank.wheels + 1] = self
 end

@@ -56,7 +56,7 @@ end
 
 function M:fixedUpdateControl(dt)
   for _, wheel in ipairs(self.wheels) do
-    wheel.joint:setMotorSpeed(self.inputX * 16)
+    wheel.joint:setMotorSpeed(self.inputX * 64)
   end
 end
 

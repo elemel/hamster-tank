@@ -1,6 +1,7 @@
 local Class = require("sial.Class")
 local Player = require("sial.Player")
 local Tank = require("sial.Tank")
+local Terrain = require("sial.Terrain")
 local utils = require("sial.utils")
 
 local M = Class.new()
@@ -13,18 +14,18 @@ function M:init()
   self:resize(love.graphics.getDimensions())
 
   self.world = love.physics.newWorld()
-  self.body = love.physics.newBody(self.world, 0, 8)
-
-  local shape = love.physics.newRectangleShape(16, 1)
-  self.fixture = love.physics.newFixture(self.body, shape)
-  self.fixture:setFriction(1)
-
   self.nextGroupIndex = 1
-  self.tanks = {}
-  self.players = {}
 
-  self.wheelRadius = 8
-  self.wheelGravity = 16
+  self.players = {}
+  self.tanks = {}
+  self.terrains = {}
+
+  self.wheelRadius = 16
+  self.wheelGravity = 32
+
+  Terrain.new(self, {
+    radius = self.wheelRadius,
+  })
 
   local tank = Tank.new(self, {
     transform = love.math.newTransform(0, 4),
@@ -51,7 +52,7 @@ function M:fixedUpdate(dt)
     tank:fixedUpdateControl(dt)
   end
 
-  -- Gravity
+  -- Apply wheel gravity
   for _, body in ipairs(self.world:getBodies()) do
     if body:getType() == "dynamic" then
       local x, y = body:getWorldCenter()
@@ -78,6 +79,9 @@ function M:draw()
 end
 
 function M:debugDrawPhysics()
+  love.graphics.push("all")
+  love.graphics.setColor(0, 1, 0, 1)
+
   for _, body in ipairs(self.world:getBodies()) do
     local angle = body:getAngle()
 
@@ -85,7 +89,20 @@ function M:debugDrawPhysics()
       local shape = fixture:getShape()
       local shapeType = shape:getType()
 
-      if shapeType == "circle" then
+      if shapeType == "chain" then
+        love.graphics.polygon("line", body:getWorldPoints(shape:getPoints()))
+
+        local vertexCount = shape:getVertexCount()
+
+        local previousX, previousY = body:getWorldPoint(shape:getPreviousVertex())
+        local firstX, firstY = body:getWorldPoint(shape:getPoint(1))
+
+        local lastX, lastY = body:getWorldPoint(shape:getPoint(vertexCount))
+        local nextX, nextY = body:getWorldPoint(shape:getNextVertex())
+
+        love.graphics.line(previousX, previousY, firstX, firstY)
+        love.graphics.line(lastX, lastY, nextX, nextY)
+      elseif shapeType == "circle" then
         local x, y = body:getWorldPoint(shape:getPoint())
         local radius = shape:getRadius()
         love.graphics.circle("line", x, y, radius)
@@ -96,10 +113,12 @@ function M:debugDrawPhysics()
       end
     end
   end
+
+  love.graphics.pop()
 end
 
 function M:resize(w, h)
-  self.cameraTransform:reset():translate(0.5 * w, 0.5 * h):scale(h / 16)
+  self.cameraTransform:reset():translate(0.5 * w, 0.5 * h):scale(h * 5 / 256)
 end
 
 function M:generateGroupIndex()
