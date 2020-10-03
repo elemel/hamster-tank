@@ -25,7 +25,8 @@ function M:init(game)
 
   self.worldToScreen = love.math.newTransform()
 
-  self:setLocalToWorld(0, 0, 0, 64)
+  self:setLocalToWorld(0, 0, 0)
+  self:setScale(1 / 32)
   self:setViewport(0, 0, 800, 600)
 
   self.previousWorldToScreen = love.math.newTransform():apply(self.worldToScreen)
@@ -38,17 +39,21 @@ function M:destroy()
   utils.removeLast(self.game.cameras, self)
 end
 
-function M:setLocalToWorld(x, y, angle, scale)
+function M:setLocalToWorld(x, y, angle)
   self.x = x
   self.y = y
 
   self.angle = angle
+
+  self.localToWorld:setTransformation(x, y, angle)
+  self.worldToLocal:reset():rotate(-angle):translate(-x, -y)
+
+  self.worldToScreen:reset():apply(self.localToScreen):scale(self.scale):apply(self.worldToLocal)
+end
+
+function M:setScale(scale)
   self.scale = scale
-
-  self.localToWorld:setTransformation(x, y, angle, scale)
-  self.worldToLocal:reset():scale(1 / scale):rotate(-angle):translate(-x, -y)
-
-  self.worldToScreen:reset():apply(self.localToScreen):apply(self.worldToLocal)
+  self.worldToScreen:reset():apply(self.localToScreen):scale(self.scale):apply(self.worldToLocal)
 end
 
 function M:setViewport(x, y, width, height)
@@ -64,7 +69,7 @@ function M:setViewport(x, y, width, height)
   local scale = self.viewportHeight
   self.localToScreen:setTransformation(x, y, 0, scale)
 
-  self.worldToScreen:reset():apply(self.localToScreen):apply(self.worldToLocal)
+  self.worldToScreen:reset():apply(self.localToScreen):scale(self.scale):apply(self.worldToLocal)
 end
 
 function M:fixedUpdateInterpolation(dt)
