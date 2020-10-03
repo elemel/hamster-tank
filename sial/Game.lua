@@ -11,8 +11,15 @@ function M:init()
   self.cameraTransform = love.math.newTransform()
   self:resize(love.graphics.getDimensions())
 
-  self.world = love.physics.newWorld()
+  self.world = love.physics.newWorld(0, 16)
+  self.body = love.physics.newBody(self.world, 0, 4)
+
+  local shape = love.physics.newRectangleShape(16, 1)
+  self.fixture = love.physics.newFixture(self.body, shape)
+
+  self.nextGroupIndex = 1
   self.tanks = {}
+
   Tank.new(self, {transform = love.math.newTransform()})
 end
 
@@ -40,14 +47,18 @@ end
 
 function M:debugDrawPhysics()
   for _, body in ipairs(self.world:getBodies()) do
+    local angle = body:getAngle()
+
     for _, fixture in ipairs(body:getFixtures()) do
       local shape = fixture:getShape()
       local shapeType = shape:getType()
 
       if shapeType == "circle" then
-        local x, y = shape:getPoint()
+        local x, y = body:getWorldPoint(shape:getPoint())
         local radius = shape:getRadius()
         love.graphics.circle("line", x, y, radius)
+        local directionX, directionY = body:getWorldVector(1, 0)
+        love.graphics.line(x, y, x + directionX * radius, y + directionY * radius)
       elseif shapeType == "polygon" then
         love.graphics.polygon("line", body:getWorldPoints(shape:getPoints()))
       end
@@ -57,6 +68,12 @@ end
 
 function M:resize(w, h)
   self.cameraTransform:reset():translate(0.5 * w, 0.5 * h):scale(h / 16)
+end
+
+function M:generateGroupIndex()
+  local result = self.nextGroupIndex
+  self.nextGroupIndex = self.nextGroupIndex + 1
+  return result
 end
 
 return M

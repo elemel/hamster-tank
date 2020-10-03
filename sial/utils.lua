@@ -51,8 +51,15 @@ local function removeLast(t, v)
   return nil
 end
 
+local function transformVector(transform, x, y)
+  local x1, y1 = transform:transformPoint(0, 0)
+  local x2, y2 = transform:transformPoint(x, y)
+  return x2 - x1, y2 - y1
+end
+
 return {
   decompose2 = decompose2,
   removeLast = removeLast,
   sign = sign,
+  transformVector = transformVector,
 }
