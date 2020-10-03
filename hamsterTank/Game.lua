@@ -27,7 +27,7 @@ function M:init()
   Terrain.new(self, {
     radius = 0.875 * 0.875 * self.wheelRadius,
     background = true,
-    color = {0.25, 0.25, 0.25, 1},
+    color = {0.25, 0.5, 0.75, 1},
 
     noise = {
       originX = love.math.random() * 256,
@@ -41,7 +41,7 @@ function M:init()
   Terrain.new(self, {
     radius = 0.875 * self.wheelRadius,
     background = true,
-    color = {0.375, 0.375, 0.375, 1},
+    color = {0.25, 0.375, 0.5, 1},
 
     noise = {
       originX = love.math.random() * 256,
@@ -54,7 +54,7 @@ function M:init()
 
   Terrain.new(self, {
     radius = self.wheelRadius,
-    color = {0.5, 0.5, 0.5, 1},
+    color = {0.625, 0.625, 0.375, 1},
 
     noise = {
       originX = love.math.random() * 256,

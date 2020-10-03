@@ -10,7 +10,7 @@ function love.load()
   })
 
   love.physics.setMeter(1)
-  love.graphics.setBackgroundColor(0.125, 0.125, 0.125, 1)
+  love.graphics.setBackgroundColor(0.25, 0.75, 1, 1)
   screen = TitleScreen.new()
 end
 
