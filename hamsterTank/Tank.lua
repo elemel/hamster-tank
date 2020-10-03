@@ -1,5 +1,6 @@
 local Class = require("hamsterTank.Class")
 local Sprite = require("hamsterTank.Sprite")
+local Turret = require("hamsterTank.Turret")
 local utils = require("hamsterTank.utils")
 local Wheel = require("hamsterTank.Wheel")
 
@@ -40,7 +41,9 @@ function M:init(game, config)
     imageToLocal = {0, 0, 0, scale, scale, 0.5 * imageWidth, 0.5 * imageHeight},
   })
 
+  self.turrets = {}
   self.wheels = {}
+
   self.game.tanks[#self.game.tanks + 1] = self
 
   Wheel.new(self, {
@@ -61,6 +64,11 @@ function M:init(game, config)
   Wheel.new(self, {
     transform = transform * love.math.newTransform(1.5, 0.75),
     radius = 0.375,
+  })
+
+  Turret.new(self, {
+    transform = {0, 0, 0},
+    radius = 0.5,
   })
 end
 
@@ -100,6 +108,10 @@ function M:fixedUpdateAnimation(dt)
   local x, y = self.body:getPosition()
   local angle = self.body:getAngle()
   self.sprite:setLocalToWorld(x, y, angle)
+
+  for _, turret in ipairs(self.turrets) do
+    turret:fixedUpdateAnimation(dt)
+  end
 
   for _, wheel in ipairs(self.wheels) do
     wheel:fixedUpdateAnimation(dt)

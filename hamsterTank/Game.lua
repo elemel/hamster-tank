@@ -67,7 +67,7 @@ function M:init(resources)
     },
   })
 
-  for i = 1, 2 do
+  for i = 1, 1 do
     local tank = Tank.new(self, {
       transform = {
         love.math.random() * 16,
@@ -245,9 +245,13 @@ function M:updateLayout()
 
   if #self.cameras == 1 then
     self.cameras[1]:setViewport(0, 0, width, height)
+    self.cameras[1]:setScale(1 / 24)
   else
     self.cameras[1]:setViewport(0, 0, 0.5 * width, height)
+    self.cameras[1]:setScale(1 / 32)
+
     self.cameras[2]:setViewport(0.5 * width, 0, 0.5 * width, height)
+    self.cameras[1]:setScale(1 / 32)
   end
 end
 

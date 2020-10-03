@@ -7,6 +7,7 @@ function M:init()
   local resources = {
     images = {
       hamster = {
+        head = love.graphics.newImage("resources/images/hamster/head.png"),
         paw = love.graphics.newImage("resources/images/hamster/paw.png"),
         trunk = love.graphics.newImage("resources/images/hamster/trunk.png"),
       },
