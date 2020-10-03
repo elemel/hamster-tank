@@ -43,9 +43,19 @@ function M:update(dt)
     self.accumulatedDt = self.accumulatedDt - self.fixedDt
     self:fixedUpdate(self.fixedDt)
   end
+
+  local t = self.accumulatedDt / self.fixedDt
+
+  for _, camera in ipairs(self.cameras) do
+    camera:updateInterpolatedTransform(t)
+  end
 end
 
 function M:fixedUpdate(dt)
+  for _, camera in ipairs(self.cameras) do
+    camera:updatePreviousTransform()
+  end
+
   for _, player in ipairs(self.players) do
     player:fixedUpdateInput(dt)
   end
@@ -78,14 +88,28 @@ end
 function M:draw()
   for _, camera in ipairs(self.cameras) do
     love.graphics.push("all")
-    love.graphics.replaceTransform(camera.transform)
-    local _, _, _, scale = utils.decompose2(camera.transform)
+
+    love.graphics.setScissor(
+      camera.viewportX, camera.viewportY, camera.viewportWidth, camera.viewportHeight)
+
+    love.graphics.replaceTransform(camera.interpolatedTransform)
+    local _, _, _, scale = utils.decompose2(camera.interpolatedTransform)
     love.graphics.setLineWidth(1 / scale)
-    self:debugDrawPhysics()
 
     for _, tank in ipairs(self.tanks) do
       tank.sprite:draw()
     end
+
+    love.graphics.pop()
+    love.graphics.push("all")
+
+    love.graphics.setScissor(
+      camera.viewportX, camera.viewportY, camera.viewportWidth, camera.viewportHeight)
+
+    love.graphics.replaceTransform(camera.transform)
+    local _, _, _, scale = utils.decompose2(camera.transform)
+    love.graphics.setLineWidth(1 / scale)
+    self:debugDrawPhysics()
 
     love.graphics.pop()
   end

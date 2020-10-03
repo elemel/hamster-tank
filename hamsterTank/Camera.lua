@@ -67,12 +67,6 @@ function M:setViewport(x, y, width, height)
   self.transform:reset():apply(self.localToScreen):apply(self.worldToLocal)
 end
 
-function M:draw()
-  love.graphics.push("all")
-  love.graphics.setScissor(self.viewportX, self.viewportY, self.viewportHeight, self.viewportWidth)
-  love.graphics.pop()
-end
-
 function M:updatePreviousTransform()
   self.previousTransform:reset():apply(self.transform)
 end
