@@ -9,6 +9,9 @@ function M:init(game, config)
   self.groupIndex = self.game:generateGroupIndex()
   self.inputX = 0
 
+  self.jumpInput = false
+  self.previousJumpInput = false
+
   local x, y, angle = utils.decompose2(config.transform)
 
   self.body = love.physics.newBody(self.game.world, x, y, "dynamic")
@@ -55,6 +58,17 @@ function M:destroy()
 end
 
 function M:fixedUpdateControl(dt)
+  if self.jumpInput and not self.previousJumpInput then
+    local downX, downY = self.body:getWorldVector(0, 1)
+    local jumpImpulse = 64
+
+    for _, wheel in ipairs(self.wheels) do
+      local wheelX, wheelY = wheel.body:getWorldCenter()
+      wheel.body:applyLinearImpulse(downX * jumpImpulse, downY * jumpImpulse, wheelX, wheelY)
+      self.body:applyLinearImpulse(-downX * jumpImpulse, -downY * jumpImpulse, wheelX, wheelY)
+    end
+  end
+
   for _, wheel in ipairs(self.wheels) do
     wheel.joint:setMotorSpeed(self.inputX * 64)
   end
