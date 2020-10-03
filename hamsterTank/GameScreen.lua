@@ -4,7 +4,16 @@ local Game = require("hamsterTank.Game")
 local M = Class.new()
 
 function M:init()
-  self.game = Game.new()
+  local resources = {
+    images = {
+      hamster = {
+        paw = love.graphics.newImage("resources/images/hamster/paw.png"),
+        trunk = love.graphics.newImage("resources/images/hamster/trunk.png"),
+      },
+    },
+  }
+
+  self.game = Game.new(resources)
 end
 
 function M:update(dt)

@@ -27,7 +27,7 @@ function M:init(tank, config)
   self.joint:setMotorEnabled(true)
   self.joint:setMaxMotorTorque(32)
 
-  local image = love.graphics.newImage("resources/images/hamster/paw.png")
+  local image = self.game.resources.images.hamster.paw
   local imageWidth, imageHeight = image:getDimensions()
   local scale = 1.125 / imageHeight
 

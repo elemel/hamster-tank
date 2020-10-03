@@ -7,7 +7,9 @@ local utils = require("hamsterTank.utils")
 
 local M = Class.new()
 
-function M:init()
+function M:init(resources)
+  self.resources = resources
+
   self.fixedDt = 1 / 60
   self.accumulatedDt = 0
 

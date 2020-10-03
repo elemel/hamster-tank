@@ -31,7 +31,7 @@ function M:init(game, config)
   self.rightFixture = love.physics.newFixture(self.body, rightShape)
   self.rightFixture:setGroupIndex(-self.groupIndex)
 
-  local image = love.graphics.newImage("resources/images/hamster/trunk.png")
+  local image = self.game.resources.images.hamster.trunk
   local imageWidth, imageHeight = image:getDimensions()
   local scale = 2 / imageHeight
 
