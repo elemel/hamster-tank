@@ -3,9 +3,10 @@ local utils = require("hamsterTank.utils")
 
 local M = Class.new()
 
-function M:init(game, tank, config)
+function M:init(game, tank, camera, config)
   self.game = game
   self.tank = tank
+  self.camera = camera
 
   self.leftKey = config.leftKey or "a"
   self.rightKey = config.rightKey or "d"
@@ -33,7 +34,7 @@ function M:fixedUpdateCamera(dt)
   local downX, downY = utils.normalize2(x, y)
   local angle = math.atan2(y, x) - 0.5 * math.pi
   local scale = 32
-  self.game.camera:setLocalToWorld(x - 0.125 * scale * downX, y - 0.125 * scale * downY, angle, scale)
+  self.camera:setLocalToWorld(x - 0.125 * scale * downX, y - 0.125 * scale * downY, angle, scale)
 end
 
 return M

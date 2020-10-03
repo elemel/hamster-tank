@@ -3,7 +3,9 @@ local utils = require("hamsterTank.utils")
 
 local M = Class.new()
 
-function M:init()
+function M:init(game)
+  self.game = game
+
   self.x = 0
   self.y = 0
 
@@ -28,6 +30,12 @@ function M:init()
 
   self.previousTransform = love.math.newTransform():apply(self.transform)
   self.interpolatedTransform = love.math.newTransform():apply(self.transform)
+
+  self.game.cameras[#self.game.cameras + 1] = self
+end
+
+function M:destroy()
+  utils.removeLast(self.game.cameras, self)
 end
 
 function M:setLocalToWorld(x, y, angle, scale)

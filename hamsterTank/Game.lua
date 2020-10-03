@@ -11,8 +11,8 @@ function M:init()
   self.fixedDt = 1 / 60
   self.accumulatedDt = 0
 
-  self.camera = Camera.new()
-  self:resize(love.graphics.getDimensions())
+  self.cameras = {}
+  local camera = Camera.new(self)
 
   self.world = love.physics.newWorld()
   self.nextGroupIndex = 1
@@ -32,7 +32,8 @@ function M:init()
     transform = {0, 16},
   })
 
-  Player.new(self, tank, {})
+  Player.new(self, tank, camera, {})
+  self:resize(love.graphics.getDimensions())
 end
 
 function M:update(dt)
@@ -75,17 +76,19 @@ function M:fixedUpdate(dt)
 end
 
 function M:draw()
-  love.graphics.push("all")
-  love.graphics.replaceTransform(self.camera.transform)
-  local _, _, _, scale = utils.decompose2(self.camera.transform)
-  love.graphics.setLineWidth(1 / scale)
-  self:debugDrawPhysics()
+  for _, camera in ipairs(self.cameras) do
+    love.graphics.push("all")
+    love.graphics.replaceTransform(camera.transform)
+    local _, _, _, scale = utils.decompose2(camera.transform)
+    love.graphics.setLineWidth(1 / scale)
+    self:debugDrawPhysics()
 
-  for _, tank in ipairs(self.tanks) do
-    tank.sprite:draw()
+    for _, tank in ipairs(self.tanks) do
+      tank.sprite:draw()
+    end
+
+    love.graphics.pop()
   end
-
-  love.graphics.pop()
 end
 
 function M:debugDrawPhysics()
@@ -128,7 +131,9 @@ function M:debugDrawPhysics()
 end
 
 function M:resize(w, h)
-  self.camera:setViewport(0, 0, w, h)
+  for _, camera in ipairs(self.cameras) do
+    camera:setViewport(0, 0, w, h)
+  end
 end
 
 function M:generateGroupIndex()
