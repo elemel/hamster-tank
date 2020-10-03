@@ -1,5 +1,5 @@
-# Stuck in a Loop
+# Hamster Tank
 
-Ludum Dare 47
+Ludum Dare 47: Stuck in a Loop
 
-![Stuck in a Loop](resources/images/splash.png)
+![Hamster Tank](resources/images/splash.png)
