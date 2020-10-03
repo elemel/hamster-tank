@@ -67,11 +67,13 @@ function M:setViewport(x, y, width, height)
   self.worldToScreen:reset():apply(self.localToScreen):apply(self.worldToLocal)
 end
 
-function M:updatePreviousWorldToScreen()
+function M:fixedUpdateInterpolation(dt)
   self.previousWorldToScreen:reset():apply(self.worldToScreen)
 end
 
-function M:updateInterpolatedWorldToScreen(t)
+function M:updateInterpolation(dt)
+  local t = self.game.accumulatedDt / self.game.fixedDt
+
   utils.mixTransforms(
     self.previousWorldToScreen, self.worldToScreen, t, self.interpolatedWorldToScreen)
 end

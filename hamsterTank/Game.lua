@@ -45,24 +45,22 @@ function M:update(dt)
     self:fixedUpdate(self.fixedDt)
   end
 
-  local t = self.accumulatedDt / self.fixedDt
-
   for _, camera in ipairs(self.cameras) do
-    camera:updateInterpolatedWorldToScreen(t)
+    camera:updateInterpolation(dt)
   end
 
   for _, sprite in ipairs(self.sprites) do
-    sprite:updateInterpolatedImageToWorld(t)
+    sprite:updateInterpolation(dt)
   end
 end
 
 function M:fixedUpdate(dt)
   for _, camera in ipairs(self.cameras) do
-    camera:updatePreviousWorldToScreen()
+    camera:fixedUpdateInterpolation(dt)
   end
 
   for _, sprite in ipairs(self.sprites) do
-    sprite:updatePreviousImageToWorld()
+    sprite:fixedUpdateInterpolation(dt)
   end
 
   for _, player in ipairs(self.players) do

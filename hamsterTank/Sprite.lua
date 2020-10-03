@@ -21,11 +21,13 @@ function M:destroy()
   utils.removeLast(self.game.sprites, self)
 end
 
-function M:updatePreviousImageToWorld()
+function M:fixedUpdateInterpolation(dt)
   self.previousImageToWorld:reset():apply(self.imageToWorld)
 end
 
-function M:updateInterpolatedImageToWorld(t)
+function M:updateInterpolation(dt)
+  local t = self.game.accumulatedDt / self.game.fixedDt
+
   utils.mixTransforms(
     self.previousImageToWorld, self.imageToWorld, t, self.interpolatedImageToWorld)
 end
