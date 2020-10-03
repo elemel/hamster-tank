@@ -17,7 +17,7 @@ function M:init(tank, config)
   self.fixture:setGroupIndex(-self.tank.groupIndex)
   self.fixture:setFriction(2)
 
-  local axisX, axisY = utils.transformVector(config.transform, 0, -1)
+  local axisX, axisY = self.body:getWorldVector(0, -1)
   self.joint = love.physics.newWheelJoint(self.tank.body, self.body, x, y, axisX, axisY)
 
   self.joint:setSpringFrequency(8)

@@ -33,7 +33,7 @@ function M:fixedUpdateCamera(dt)
   local downX, downY = utils.normalize2(x, y)
   local angle = math.atan2(y, x) - 0.5 * math.pi
   local scale = 32
-  self.game.camera:setCameraToWorld(x - 0.125 * scale * downX, y - 0.125 * scale * downY, angle, scale)
+  self.game.camera:setLocalToWorld(x - 0.125 * scale * downX, y - 0.125 * scale * downY, angle, scale)
 end
 
 return M

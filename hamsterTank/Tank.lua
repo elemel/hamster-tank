@@ -13,7 +13,8 @@ function M:init(game, config)
   self.jumpInput = false
   self.previousJumpInput = false
 
-  local x, y, angle = utils.decompose2(config.transform)
+  local transform = love.math.newTransform(unpack(config.transform))
+  local x, y, angle = utils.decompose2(transform)
 
   self.body = love.physics.newBody(self.game.world, x, y, "dynamic")
   self.body:setAngle(angle)
@@ -23,26 +24,25 @@ function M:init(game, config)
   self.fixture:setGroupIndex(-self.groupIndex)
 
   self.wheels = {}
-
   self.game.tanks[#self.game.tanks + 1] = self
 
   Wheel.new(self, {
-    transform = config.transform * love.math.newTransform(-1.5, 0.75),
+    transform = transform * love.math.newTransform(-1.5, 0.75),
     radius = 0.375,
   })
 
   Wheel.new(self, {
-    transform = config.transform * love.math.newTransform(-0.5, 0.75),
+    transform = transform * love.math.newTransform(-0.5, 0.75),
     radius = 0.375,
   })
 
   Wheel.new(self, {
-    transform = config.transform * love.math.newTransform(0.5, 0.75),
+    transform = transform * love.math.newTransform(0.5, 0.75),
     radius = 0.375,
   })
 
   Wheel.new(self, {
-    transform = config.transform * love.math.newTransform(1.5, 0.75),
+    transform = transform * love.math.newTransform(1.5, 0.75),
     radius = 0.375,
   })
 

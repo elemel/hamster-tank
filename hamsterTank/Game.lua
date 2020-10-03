@@ -29,7 +29,7 @@ function M:init()
   })
 
   local tank = Tank.new(self, {
-    transform = love.math.newTransform(0, 16),
+    transform = {0, 16},
   })
 
   Player.new(self, tank, {})

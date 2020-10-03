@@ -1,4 +1,5 @@
 local Class = require("hamsterTank.Class")
+local utils = require("hamsterTank.utils")
 
 local M = Class.new()
 
@@ -15,29 +16,31 @@ function M:init()
   self.viewportWidth = 1
   self.viewportHeight = 1
 
-  self.cameraToWorld = love.math.newTransform()
-  self.worldToCamera = love.math.newTransform()
+  self.localToWorld = love.math.newTransform()
+  self.worldToLocal = love.math.newTransform()
 
-  self.cameraToScreen = love.math.newTransform()
+  self.localToScreen = love.math.newTransform()
 
   self.transform = love.math.newTransform()
-  self.previousTransform = love.math.newTransform()
 
-  self:setCameraToWorld(0, 0, 0, 64)
+  self:setLocalToWorld(0, 0, 0, 64)
   self:setViewport(0, 0, 800, 600)
+
+  self.previousTransform = love.math.newTransform():apply(self.transform)
+  self.interpolatedTransform = love.math.newTransform():apply(self.transform)
 end
 
-function M:setCameraToWorld(x, y, angle, scale)
+function M:setLocalToWorld(x, y, angle, scale)
   self.x = x
   self.y = y
 
   self.angle = angle
   self.scale = scale
 
-  self.cameraToWorld:setTransformation(x, y, angle, scale)
-  self.worldToCamera:reset():scale(1 / scale):rotate(-angle):translate(-x, -y)
+  self.localToWorld:setTransformation(x, y, angle, scale)
+  self.worldToLocal:reset():scale(1 / scale):rotate(-angle):translate(-x, -y)
 
-  self.transform:reset():apply(self.cameraToScreen):apply(self.worldToCamera)
+  self.transform:reset():apply(self.localToScreen):apply(self.worldToLocal)
 end
 
 function M:setViewport(x, y, width, height)
@@ -51,9 +54,9 @@ function M:setViewport(x, y, width, height)
   local y = self.viewportY + 0.5 * self.viewportHeight
 
   local scale = self.viewportHeight
-  self.cameraToScreen:setTransformation(x, y, 0, scale)
+  self.localToScreen:setTransformation(x, y, 0, scale)
 
-  self.transform:reset():apply(self.cameraToScreen):apply(self.worldToCamera)
+  self.transform:reset():apply(self.localToScreen):apply(self.worldToLocal)
 end
 
 function M:draw()
@@ -63,7 +66,11 @@ function M:draw()
 end
 
 function M:updatePreviousTransform()
-  self.previousTransform:setMatrix(self.transform:getMatrix())
+  self.previousTransform:reset():apply(self.transform)
+end
+
+function M:updateInterpolatedTransform(t)
+  utils.mixTransforms(self.previousTransform, self.transform, t, self.interpolatedTransform)
 end
 
 return M
