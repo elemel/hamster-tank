@@ -19,9 +19,17 @@ function M:init(game, config)
   self.body = love.physics.newBody(self.game.world, x, y, "dynamic")
   self.body:setAngle(angle)
 
-  local shape = love.physics.newRectangleShape(3, 1.5)
-  self.fixture = love.physics.newFixture(self.body, shape)
+  local leftShape = love.physics.newCircleShape(-0.75, 0, 0.75)
+  self.leftFixture = love.physics.newFixture(self.body, leftShape)
+  self.leftFixture:setGroupIndex(-self.groupIndex)
+
+  local centerShape = love.physics.newRectangleShape(1.5, 1.5)
+  self.fixture = love.physics.newFixture(self.body, centerShape)
   self.fixture:setGroupIndex(-self.groupIndex)
+
+  local rightShape = love.physics.newCircleShape(0.75, 0, 0.75)
+  self.rightFixture = love.physics.newFixture(self.body, rightShape)
+  self.rightFixture:setGroupIndex(-self.groupIndex)
 
   self.wheels = {}
   self.game.tanks[#self.game.tanks + 1] = self
@@ -63,7 +71,10 @@ function M:destroy()
 
   utils.removeLast(self.game.tanks, self)
 
-  self.fixture:destroy()
+  self.rightFixture:destroy()
+  self.centerFixture:destroy()
+  self.leftFixture:destroy()
+
   self.body:destroy()
 end
 
