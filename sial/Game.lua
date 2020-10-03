@@ -1,4 +1,5 @@
 local Class = require("sial.Class")
+local Tank = require("sial.Tank")
 local utils = require("sial.utils")
 
 local M = Class.new()
@@ -6,11 +7,13 @@ local M = Class.new()
 function M:init()
   self.fixedDt = 1 / 60
   self.accumulatedDt = 0
-  self.cameraTransform = love.math.newTransform():translate(400, 300):scale(600 / 16)
+
+  self.cameraTransform = love.math.newTransform()
+  self:resize(love.graphics.getDimensions())
+
   self.world = love.physics.newWorld()
-  self.body = love.physics.newBody(self.world)
-  local shape = love.physics.newCircleShape(0.5)
-  self.fixture = love.physics.newFixture(self.body, shape)
+  self.tanks = {}
+  Tank.new(self, {transform = love.math.newTransform()})
 end
 
 function M:update(dt)
@@ -45,6 +48,8 @@ function M:debugDrawPhysics()
         local x, y = shape:getPoint()
         local radius = shape:getRadius()
         love.graphics.circle("line", x, y, radius)
+      elseif shapeType == "polygon" then
+        love.graphics.polygon("line", body:getWorldPoints(shape:getPoints()))
       end
     end
   end

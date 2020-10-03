@@ -1,4 +1,5 @@
 local acos = math.acos
+local remove = table.remove
 local sqrt = math.sqrt
 
 local function sign(x)
@@ -39,7 +40,19 @@ local function decompose2(transform)
   return x, y, angle, scaleX, scaleY, 0, 0, shearX, shearY
 end
 
+local function removeLast(t, v)
+  for i = #t, 1, -1 do
+    if t[i] == v then
+      remove(t, i)
+      return i
+    end
+  end
+
+  return nil
+end
+
 return {
   decompose2 = decompose2,
+  removeLast = removeLast,
   sign = sign,
 }
