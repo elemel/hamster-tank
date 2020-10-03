@@ -65,12 +65,28 @@ function M:init()
     },
   })
 
-  local tank = Tank.new(self, {
-    transform = {0, 16},
-  })
+  for i = 1, 2 do
+    local tank = Tank.new(self, {
+      transform = {
+        love.math.random() * 16,
+        love.math.random() * 16,
+        love.math.random() * 2 * math.pi,
+      },
+    })
 
-  local camera = Camera.new(self)
-  Player.new(self, tank, camera, {})
+    local camera = Camera.new(self)
+
+    if i == 1 then
+      Player.new(self, tank, camera, {})
+    else
+      Player.new(self, tank, camera, {
+        leftKey = "left",
+        rightKey = "right",
+        jumpKey = "up",
+      })
+    end
+  end
+
   self:resize(love.graphics.getDimensions())
 end
 
@@ -164,6 +180,12 @@ function M:draw()
     -- self:debugDrawPhysics()
 
     love.graphics.pop()
+
+    love.graphics.push("all")
+    love.graphics.setColor(0, 0, 0, 0.5)
+    love.graphics.setLineWidth(2)
+    love.graphics.rectangle("line", camera.viewportX, camera.viewportY, camera.viewportWidth, camera.viewportHeight)
+    love.graphics.pop()
   end
 end
 
@@ -207,15 +229,24 @@ function M:debugDrawPhysics()
 end
 
 function M:resize(w, h)
-  for _, camera in ipairs(self.cameras) do
-    camera:setViewport(0, 0, w, h)
-  end
+  self:updateLayout()
 end
 
 function M:generateGroupIndex()
   local result = self.nextGroupIndex
   self.nextGroupIndex = self.nextGroupIndex + 1
   return result
+end
+
+function M:updateLayout()
+  local width, height = love.graphics.getDimensions()
+
+  if #self.cameras == 1 then
+    self.cameras[1]:setViewport(0, 0, width, height)
+  else
+    self.cameras[1]:setViewport(0, 0, 0.5 * width, height)
+    self.cameras[2]:setViewport(0.5 * width, 0, 0.5 * width, height)
+  end
 end
 
 return M
