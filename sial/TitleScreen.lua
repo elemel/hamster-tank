@@ -28,4 +28,7 @@ function M:keypressed(key, scancode, isrepeat)
   end
 end
 
+function M:resize(w, h)
+end
+
 return M

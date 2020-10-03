@@ -23,4 +23,8 @@ function M:keypressed(key, scancode, isrepeat)
   end
 end
 
+function M:resize(w, h)
+  self.game:resize(w, h)
+end
+
 return M

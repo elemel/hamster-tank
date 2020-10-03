@@ -22,3 +22,7 @@ end
 function love.keypressed(key, scancode, isrepeat)
   screen:keypressed(key, scancode, isrepeat)
 end
+
+function love.resize(w, h)
+  screen:resize(w, h)
+end
