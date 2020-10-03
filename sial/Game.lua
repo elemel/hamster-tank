@@ -1,4 +1,5 @@
 local Class = require("sial.Class")
+local Player = require("sial.Player")
 local Tank = require("sial.Tank")
 local utils = require("sial.utils")
 
@@ -16,11 +17,14 @@ function M:init()
 
   local shape = love.physics.newRectangleShape(16, 1)
   self.fixture = love.physics.newFixture(self.body, shape)
+  self.fixture:setFriction(1)
 
   self.nextGroupIndex = 1
   self.tanks = {}
+  self.players = {}
 
-  Tank.new(self, {transform = love.math.newTransform()})
+  local tank = Tank.new(self, {transform = love.math.newTransform()})
+  Player.new(self, tank, {})
 end
 
 function M:update(dt)
@@ -33,6 +37,14 @@ function M:update(dt)
 end
 
 function M:fixedUpdate(dt)
+  for _, player in ipairs(self.players) do
+    player:fixedUpdateInput(dt)
+  end
+
+  for _, tank in ipairs(self.tanks) do
+    tank:fixedUpdateControl(dt)
+  end
+
   self.world:update(dt)
 end
 

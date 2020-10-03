@@ -7,6 +7,7 @@ local M = Class.new()
 function M:init(game, config)
   self.game = game
   self.groupIndex = self.game:generateGroupIndex()
+  self.inputX = 0
 
   local x, y, angle = utils.decompose2(config.transform)
 
@@ -51,6 +52,12 @@ function M:destroy()
 
   self.fixture:destroy()
   self.body:destroy()
+end
+
+function M:fixedUpdateControl(dt)
+  for _, wheel in ipairs(self.wheels) do
+    wheel.joint:setMotorSpeed(self.inputX * 16)
+  end
 end
 
 return M
