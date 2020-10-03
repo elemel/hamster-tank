@@ -92,8 +92,8 @@ function M:draw()
     love.graphics.setScissor(
       camera.viewportX, camera.viewportY, camera.viewportWidth, camera.viewportHeight)
 
-    love.graphics.replaceTransform(camera.interpolatedTransform)
-    local _, _, _, scale = utils.decompose2(camera.interpolatedTransform)
+    love.graphics.replaceTransform(camera.interpolatedWorldToScreen)
+    local _, _, _, scale = utils.decompose2(camera.interpolatedWorldToScreen)
     love.graphics.setLineWidth(1 / scale)
 
     for _, tank in ipairs(self.tanks) do
@@ -106,8 +106,8 @@ function M:draw()
     love.graphics.setScissor(
       camera.viewportX, camera.viewportY, camera.viewportWidth, camera.viewportHeight)
 
-    love.graphics.replaceTransform(camera.transform)
-    local _, _, _, scale = utils.decompose2(camera.transform)
+    love.graphics.replaceTransform(camera.worldToScreen)
+    local _, _, _, scale = utils.decompose2(camera.worldToScreen)
     love.graphics.setLineWidth(1 / scale)
     self:debugDrawPhysics()
 
