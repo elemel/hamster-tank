@@ -1,3 +1,4 @@
+local Camera = require("hamsterTank.Camera")
 local Class = require("hamsterTank.Class")
 local Player = require("hamsterTank.Player")
 local Tank = require("hamsterTank.Tank")
@@ -10,7 +11,7 @@ function M:init()
   self.fixedDt = 1 / 60
   self.accumulatedDt = 0
 
-  self.cameraTransform = love.math.newTransform()
+  self.camera = Camera.new()
   self:resize(love.graphics.getDimensions())
 
   self.world = love.physics.newWorld()
@@ -20,7 +21,7 @@ function M:init()
   self.tanks = {}
   self.terrains = {}
 
-  self.wheelRadius = 16
+  self.wheelRadius = 32
   self.wheelGravity = 32
 
   Terrain.new(self, {
@@ -28,7 +29,7 @@ function M:init()
   })
 
   local tank = Tank.new(self, {
-    transform = love.math.newTransform(0, 4),
+    transform = love.math.newTransform(0, 16),
   })
 
   Player.new(self, tank, {})
@@ -67,12 +68,16 @@ function M:fixedUpdate(dt)
   end
 
   self.world:update(dt)
+
+  for _, player in ipairs(self.players) do
+    player:fixedUpdateCamera(dt)
+  end
 end
 
 function M:draw()
   love.graphics.push("all")
-  love.graphics.replaceTransform(self.cameraTransform)
-  local _, _, _, scale = utils.decompose2(self.cameraTransform)
+  love.graphics.replaceTransform(self.camera.transform)
+  local _, _, _, scale = utils.decompose2(self.camera.transform)
   love.graphics.setLineWidth(1 / scale)
   self:debugDrawPhysics()
   love.graphics.pop()
@@ -118,7 +123,7 @@ function M:debugDrawPhysics()
 end
 
 function M:resize(w, h)
-  self.cameraTransform:reset():translate(0.5 * w, 0.5 * h):scale(h * 5 / 256)
+  self.camera:setViewport(0, 0, w, h)
 end
 
 function M:generateGroupIndex()

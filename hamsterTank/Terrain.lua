@@ -7,7 +7,7 @@ function M:init(game, config)
   self.game = game
   self.body = love.physics.newBody(self.game.world)
 
-  local pointCount = 256
+  local pointCount = 1024
   local points = {}
 
   for i = 1, pointCount do
@@ -20,8 +20,8 @@ function M:init(game, config)
     local x = directionX * config.radius
     local y = directionY * config.radius
 
-    local noiseFrequency = 1 / 16
-    local noiseAmplitude = 4
+    local noiseFrequency = 1 / 32
+    local noiseAmplitude = 8
 
     local noiseValue = 0
 
