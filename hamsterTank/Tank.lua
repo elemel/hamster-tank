@@ -50,7 +50,7 @@ function M:init(game, config)
   local imageWidth, imageHeight = image:getDimensions()
   local scale = 2 / imageHeight
 
-  self.sprite = Sprite.new(image, {
+  self.sprite = Sprite.new(self.game, image, {
     localToWorld = {x, y, angle},
     imageToLocal = {0, 0, 0, scale, scale, 0.5 * imageWidth, 0.5 * imageHeight},
   })
@@ -82,6 +82,12 @@ function M:fixedUpdateControl(dt)
   for _, wheel in ipairs(self.wheels) do
     wheel.joint:setMotorSpeed(self.inputX * 64)
   end
+end
+
+function M:fixedUpdateAnimation(dt)
+  local x, y = self.body:getPosition()
+  local angle = self.body:getAngle()
+  self.sprite:setLocalToWorld(x, y, angle)
 end
 
 return M

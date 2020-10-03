@@ -12,12 +12,12 @@ function M:init()
   self.accumulatedDt = 0
 
   self.cameras = {}
-  local camera = Camera.new(self)
 
   self.world = love.physics.newWorld()
   self.nextGroupIndex = 1
 
   self.players = {}
+  self.sprites = {}
   self.tanks = {}
   self.terrains = {}
 
@@ -32,6 +32,7 @@ function M:init()
     transform = {0, 16},
   })
 
+  local camera = Camera.new(self)
   Player.new(self, tank, camera, {})
   self:resize(love.graphics.getDimensions())
 end
@@ -47,13 +48,21 @@ function M:update(dt)
   local t = self.accumulatedDt / self.fixedDt
 
   for _, camera in ipairs(self.cameras) do
-    camera:updateInterpolatedTransform(t)
+    camera:updateInterpolatedWorldToScreen(t)
+  end
+
+  for _, sprite in ipairs(self.sprites) do
+    sprite:updateInterpolatedImageToWorld(t)
   end
 end
 
 function M:fixedUpdate(dt)
   for _, camera in ipairs(self.cameras) do
-    camera:updatePreviousTransform()
+    camera:updatePreviousWorldToScreen()
+  end
+
+  for _, sprite in ipairs(self.sprites) do
+    sprite:updatePreviousImageToWorld()
   end
 
   for _, player in ipairs(self.players) do
@@ -80,6 +89,10 @@ function M:fixedUpdate(dt)
 
   self.world:update(dt)
 
+  for _, tank in ipairs(self.tanks) do
+    tank:fixedUpdateAnimation(dt)
+  end
+
   for _, player in ipairs(self.players) do
     player:fixedUpdateCamera(dt)
   end
@@ -96,8 +109,8 @@ function M:draw()
     local _, _, _, scale = utils.decompose2(camera.interpolatedWorldToScreen)
     love.graphics.setLineWidth(1 / scale)
 
-    for _, tank in ipairs(self.tanks) do
-      tank.sprite:draw()
+    for _, sprite in ipairs(self.sprites) do
+      love.graphics.draw(sprite.image, sprite.interpolatedImageToWorld)
     end
 
     love.graphics.pop()

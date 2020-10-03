@@ -67,12 +67,13 @@ function M:setViewport(x, y, width, height)
   self.worldToScreen:reset():apply(self.localToScreen):apply(self.worldToLocal)
 end
 
-function M:updatePreviousTransform()
+function M:updatePreviousWorldToScreen()
   self.previousWorldToScreen:reset():apply(self.worldToScreen)
 end
 
-function M:updateInterpolatedTransform(t)
-  utils.mixTransforms(self.previousWorldToScreen, self.worldToScreen, t, self.interpolatedWorldToScreen)
+function M:updateInterpolatedWorldToScreen(t)
+  utils.mixTransforms(
+    self.previousWorldToScreen, self.worldToScreen, t, self.interpolatedWorldToScreen)
 end
 
 return M
