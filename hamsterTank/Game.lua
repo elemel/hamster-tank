@@ -80,6 +80,11 @@ function M:draw()
   local _, _, _, scale = utils.decompose2(self.camera.transform)
   love.graphics.setLineWidth(1 / scale)
   self:debugDrawPhysics()
+
+  for _, tank in ipairs(self.tanks) do
+    tank.sprite:draw()
+  end
+
   love.graphics.pop()
 end
 

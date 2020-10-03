@@ -1,4 +1,5 @@
 local Class = require("hamsterTank.Class")
+local Sprite = require("hamsterTank.Sprite")
 local utils = require("hamsterTank.utils")
 local Wheel = require("hamsterTank.Wheel")
 
@@ -43,6 +44,15 @@ function M:init(game, config)
   Wheel.new(self, {
     transform = config.transform * love.math.newTransform(1.5, 0.75),
     radius = 0.375,
+  })
+
+  local image = love.graphics.newImage("resources/images/hamster/trunk.png")
+  local imageWidth, imageHeight = image:getDimensions()
+  local scale = 2 / imageHeight
+
+  self.sprite = Sprite.new(image, {
+    localToWorld = {x, y, angle},
+    imageToLocal = {0, 0, 0, scale, scale, 0.5 * imageWidth, 0.5 * imageHeight},
   })
 end
 
