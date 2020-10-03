@@ -31,6 +31,15 @@ function M:init(game, config)
   self.rightFixture = love.physics.newFixture(self.body, rightShape)
   self.rightFixture:setGroupIndex(-self.groupIndex)
 
+  local image = love.graphics.newImage("resources/images/hamster/trunk.png")
+  local imageWidth, imageHeight = image:getDimensions()
+  local scale = 2 / imageHeight
+
+  self.sprite = Sprite.new(self.game, image, {
+    localToWorld = {x, y, angle},
+    imageToLocal = {0, 0, 0, scale, scale, 0.5 * imageWidth, 0.5 * imageHeight},
+  })
+
   self.wheels = {}
   self.game.tanks[#self.game.tanks + 1] = self
 
@@ -53,15 +62,6 @@ function M:init(game, config)
     transform = transform * love.math.newTransform(1.5, 0.75),
     radius = 0.375,
   })
-
-  local image = love.graphics.newImage("resources/images/hamster/trunk.png")
-  local imageWidth, imageHeight = image:getDimensions()
-  local scale = 2 / imageHeight
-
-  self.sprite = Sprite.new(self.game, image, {
-    localToWorld = {x, y, angle},
-    imageToLocal = {0, 0, 0, scale, scale, 0.5 * imageWidth, 0.5 * imageHeight},
-  })
 end
 
 function M:destroy()
@@ -70,6 +70,7 @@ function M:destroy()
   end
 
   utils.removeLast(self.game.tanks, self)
+  self.sprite:destroy()
 
   self.rightFixture:destroy()
   self.centerFixture:destroy()
@@ -99,6 +100,10 @@ function M:fixedUpdateAnimation(dt)
   local x, y = self.body:getPosition()
   local angle = self.body:getAngle()
   self.sprite:setLocalToWorld(x, y, angle)
+
+  for _, wheel in ipairs(self.wheels) do
+    wheel:fixedUpdateAnimation(dt)
+  end
 end
 
 return M
