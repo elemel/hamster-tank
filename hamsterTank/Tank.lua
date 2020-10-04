@@ -12,7 +12,9 @@ function M:init(game, config)
 
   self.game = game
   self.groupIndex = self.game:generateGroupIndex()
-  self.inputX = 0
+
+  self.moveInputX = 0
+  self.moveInputY = 0
 
   self.aimInputX = 0
   self.aimInputY = 0
@@ -201,7 +203,7 @@ function M:fixedUpdateControl(dt)
   end
 
   for _, wheel in ipairs(self.wheels) do
-    wheel.joint:setMotorSpeed(self.inputX * 64)
+    wheel.joint:setMotorSpeed(self.moveInputX * 64)
   end
 end
 

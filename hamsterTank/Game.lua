@@ -1,5 +1,6 @@
 local Camera = require("hamsterTank.Camera")
 local Class = require("hamsterTank.Class")
+local KeyboardMouseControls = require("hamsterTank.KeyboardMouseControls")
 local Player = require("hamsterTank.Player")
 local Tank = require("hamsterTank.Tank")
 local Terrain = require("hamsterTank.Terrain")
@@ -13,9 +14,7 @@ function M:init(resources)
   self.fixedDt = 1 / 60
   self.accumulatedDt = 0
 
-  self.accumulatedMouseDx = 0
-  self.accumulatedMouseDy = 0
-
+  self.keyboardMouseControls = KeyboardMouseControls.new({})
   self.cameras = {}
 
   self.world = love.physics.newWorld()
@@ -94,18 +93,11 @@ function M:init(resources)
     },
   })
 
-  for i = 1, 2 do
+  for i = 1, 1 do
     local camera = Camera.new(self)
+    local controls = self.keyboardMouseControls
 
-    if i == 1 then
-      Player.new(self, camera, {})
-    else
-      Player.new(self, camera, {
-        leftKey = "left",
-        rightKey = "right",
-        jumpKey = "up",
-      })
-    end
+    Player.new(self, camera, controls, {})
   end
 
   self:resize(love.graphics.getDimensions())
@@ -354,8 +346,7 @@ function M:updateLayout()
 end
 
 function M:mousemoved(x, y, dx, dy, istouch)
-  self.accumulatedMouseDx = self.accumulatedMouseDx + dx
-  self.accumulatedMouseDy = self.accumulatedMouseDy + dy
+  self.keyboardMouseControls:mousemoved(x, y, dx, dy, istouch)
 end
 
 function M:handleFireballTerrainCollision(fireballData, terrainData)
