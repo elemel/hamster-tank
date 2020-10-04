@@ -414,6 +414,7 @@ function M:handleFireballTerrainCollision(fireballData, terrainData)
 
   if not fireball.dead then
     fireball:setDead(true)
+    self.resources.sounds.fireballTerrainCollision:clone():play()
   end
 end
 
@@ -434,6 +435,8 @@ function M:handleFireballTankCollision(fireballData, tankData)
         player:incrementKillCount()
       end
     end
+
+    self.resources.sounds.fireballTankCollision:clone():play()
   end
 end
 

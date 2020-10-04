@@ -113,6 +113,8 @@ function M:fixedUpdateControl(dt)
       linearVelocityY = linearVelocityY,
     })
 
+    self.game.resources.sounds.fire:clone():play()
+
     local t = utils.clamp(0.5 - 0.5 * self.tank.aimInputY, 0, 1)
     local muzzleVelocity = utils.mix(self.minMuzzleVelocity, self.maxMuzzleVelocity, t)
     local impulse = muzzleVelocity * fireball.body:getMass()

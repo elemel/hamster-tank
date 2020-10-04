@@ -17,6 +17,12 @@ function M:init(joystick)
         smoke = love.graphics.newImage("resources/images/particles/smoke.png"),
       },
     },
+
+    sounds = {
+      fire = love.audio.newSource("resources/sounds/fire.ogg", "static"),
+      fireballTankCollision = love.audio.newSource("resources/sounds/fireballTankCollision.ogg", "static"),
+      fireballTerrainCollision = love.audio.newSource("resources/sounds/fireballTerrainCollision.ogg", "static"),
+    },
   }
 
   self.game = Game.new(resources, joystick)
