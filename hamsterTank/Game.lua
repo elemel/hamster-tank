@@ -71,20 +71,12 @@ function M:init(resources)
   })
 
   for i = 1, 1 do
-    local tank = Tank.new(self, {
-      transform = {
-        love.math.random() * 16,
-        love.math.random() * 16,
-        love.math.random() * 2 * math.pi,
-      },
-    })
-
     local camera = Camera.new(self)
 
     if i == 1 then
-      Player.new(self, tank, camera, {})
+      Player.new(self, camera, {})
     else
-      Player.new(self, tank, camera, {
+      Player.new(self, camera, {
         leftKey = "left",
         rightKey = "right",
         jumpKey = "up",
@@ -122,6 +114,10 @@ function M:fixedUpdate(dt)
   end
 
   for _, player in ipairs(self.players) do
+    player:fixedUpdateSpawn(dt)
+  end
+
+  for _, player in ipairs(self.players) do
     player:fixedUpdateInput(dt)
   end
 
@@ -151,6 +147,10 @@ function M:fixedUpdate(dt)
 
   for _, player in ipairs(self.players) do
     player:fixedUpdateCamera(dt)
+  end
+
+  for i = #self.tanks, 1, -1 do
+    self.tanks[i]:fixedUpdateDespawn(dt)
   end
 end
 
