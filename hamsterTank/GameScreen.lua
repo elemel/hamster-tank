@@ -37,4 +37,8 @@ function M:resize(w, h)
   self.game:resize(w, h)
 end
 
+function M:mousemoved(x, y, dx, dy, istouch)
+  self.game:mousemoved(x, y, dx, dy, istouch)
+end
+
 return M

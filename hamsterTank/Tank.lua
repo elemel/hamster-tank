@@ -11,6 +11,9 @@ function M:init(game, config)
   self.groupIndex = self.game:generateGroupIndex()
   self.inputX = 0
 
+  self.aimInputX = 0
+  self.aimInputY = 0
+
   self.jumpInput = false
   self.previousJumpInput = false
 
@@ -67,8 +70,9 @@ function M:init(game, config)
   })
 
   Turret.new(self, {
-    transform = {0, 0, 0},
+    transform = {0, -0.75, 0},
     radius = 0.5,
+    maxDistance = 0.5,
   })
 end
 
@@ -97,6 +101,10 @@ function M:fixedUpdateControl(dt)
       wheel.body:applyLinearImpulse(downX * jumpImpulse, downY * jumpImpulse, wheelX, wheelY)
       self.body:applyLinearImpulse(-downX * jumpImpulse, -downY * jumpImpulse, wheelX, wheelY)
     end
+  end
+
+  for _, turret in ipairs(self.turrets) do
+    turret:fixedUpdateControl(dt)
   end
 
   for _, wheel in ipairs(self.wheels) do

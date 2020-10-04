@@ -31,4 +31,7 @@ end
 function M:resize(w, h)
 end
 
+function M:mousemoved(x, y, dx, dy, istouch)
+end
+
 return M

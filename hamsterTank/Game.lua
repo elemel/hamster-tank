@@ -13,6 +13,9 @@ function M:init(resources)
   self.fixedDt = 1 / 60
   self.accumulatedDt = 0
 
+  self.accumulatedMouseDx = 0
+  self.accumulatedMouseDy = 0
+
   self.cameras = {}
 
   self.world = love.physics.newWorld()
@@ -253,6 +256,11 @@ function M:updateLayout()
     self.cameras[2]:setViewport(0.5 * width, 0, 0.5 * width, height)
     self.cameras[1]:setScale(1 / 32)
   end
+end
+
+function M:mousemoved(x, y, dx, dy, istouch)
+  self.accumulatedMouseDx = self.accumulatedMouseDx + dx
+  self.accumulatedMouseDy = self.accumulatedMouseDy + dy
 end
 
 return M

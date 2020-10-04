@@ -12,6 +12,11 @@ function M:init(tank, config)
   local x, y = self.tank.body:getWorldPoint(localX, localY)
   local angle = localAngle + self.tank.body:getAngle()
 
+  self.localX = localX
+  self.localY = localY
+
+  self.maxDistance = config.maxDistance
+
   self.body = love.physics.newBody(self.game.world, x, y, "dynamic")
   self.body:setAngle(angle)
 
@@ -19,15 +24,21 @@ function M:init(tank, config)
   self.fixture = love.physics.newFixture(self.body, shape)
   self.fixture:setGroupIndex(-self.tank.groupIndex)
 
-  local x1, y1 = self.tank.body:getWorldPoint(0, -0.75)
   local x2, y2 = self.body:getPosition()
 
-  self.ropeJoint = love.physics.newRopeJoint(self.tank.body, self.body, x1, y1, x2, y2, 0.5)
+  self.ropeJoint = love.physics.newRopeJoint(self.tank.body, self.body, x, y, x, y, self.maxDistance)
 
-  self.motorJoint = love.physics.newMotorJoint(self.tank.body, self.body)
-  self.motorJoint:setLinearOffset(0, -0.75)
-  self.motorJoint:setMaxForce(256)
-  self.motorJoint:setMaxTorque(64)
+  self.distanceJoints = {}
+
+  for _, localAnchor in ipairs({{-0.75, 0}, {0, 0}, {0.75, 0}}) do
+    local anchorX, anchorY = self.tank.body:getWorldPoint(unpack(localAnchor))
+    local joint = love.physics.newDistanceJoint(self.tank.body, self.body, anchorX, anchorY, x, y)
+
+    joint:setFrequency(4)
+    joint:setDampingRatio(1)
+
+    self.distanceJoints[#self.distanceJoints + 1] = joint
+  end
 
   local image = self.game.resources.images.hamster.head
   local imageWidth, imageHeight = image:getDimensions()
@@ -47,11 +58,13 @@ function M:destroy()
   self.sprite:destroy()
   self.sprite = nil
 
+  for i = #self.distanceJoints, 1, -1 do
+    self.distanceJoints[i]:destroy()
+    self.distanceJoints[i] = nil
+  end
+
   self.ropeJoint:destroy()
   self.ropeJoint = nil
-
-  self.motorJoint:destroy()
-  self.motorJoint = nil
 
   self.fixture:destroy()
   self.fixture = nil
@@ -60,9 +73,24 @@ function M:destroy()
   self.body = nil
 end
 
+function M:fixedUpdateControl(dt)
+  for _, joint in ipairs(self.distanceJoints) do
+    local x1, y1, x2, y2 = joint:getAnchors()
+
+    local targetX, targetY = self.tank.body:getWorldPoint(
+      self.localX + self.tank.aimInputX * self.maxDistance,
+      self.localY + self.tank.aimInputY * self.maxDistance)
+
+    local length = utils.distance2(x1, y1, targetX, targetY)
+
+    joint:setLength(length)
+  end
+end
+
 function M:fixedUpdateAnimation(dt)
   local x, y = self.body:getPosition()
-  local angle = self.body:getAngle()
+  local localX, localY = self.tank.body:getLocalPoint(x, y)
+  local angle = math.atan2(localY, localX) + 0.5 * math.pi + self.tank.body:getAngle()
   self.sprite:setLocalToWorld(x, y, angle)
 end
 

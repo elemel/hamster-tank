@@ -106,8 +106,18 @@ local function mixTransforms(a, b, t, c)
   return c, c34
 end
 
+local function length2(x, y)
+  return sqrt(x * x + y * y)
+end
+
+local function distance2(x1, y1, x2, y2)
+  return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))
+end
+
 return {
   decompose2 = decompose2,
+  distance2 = distance2,
+  length2 = length2,
   mixTransforms = mixTransforms,
   normalize2 = normalize2,
   removeLast = removeLast,
