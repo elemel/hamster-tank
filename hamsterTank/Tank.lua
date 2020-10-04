@@ -205,23 +205,27 @@ function M:fixedUpdateAnimation(dt)
 end
 
 function M:setDead(dead)
-  if dead ~= self.dead then
-    self.dead = dead
-
-    if self.dead then
-      for _, turret in ipairs(self.turrets) do
-        turret.fixture:setSensor(true)
-      end
-
-      for _, wheel in ipairs(self.wheels) do
-        wheel.fixture:setSensor(true)
-      end
-
-      self.rightFixture:setSensor(true)
-      self.centerFixture:setSensor(true)
-      self.leftFixture:setSensor(true)
-    end
+  if dead == self.dead then
+    return
   end
+
+  self.dead = dead
+
+  if not self.dead then
+    return
+  end
+
+  for _, turret in ipairs(self.turrets) do
+    turret.fixture:setSensor(true)
+  end
+
+  for _, wheel in ipairs(self.wheels) do
+    wheel.fixture:setSensor(true)
+  end
+
+  self.rightFixture:setSensor(true)
+  self.centerFixture:setSensor(true)
+  self.leftFixture:setSensor(true)
 end
 
 function M:fixedUpdateDespawn(dt)

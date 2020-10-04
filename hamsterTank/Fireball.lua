@@ -5,6 +5,7 @@ local M = Class.new()
 
 function M:init(tank, config)
   self.game = tank.game
+  self.dead = false
   self.despawnDelay = 8
 
   local x, y, angle = unpack(config.transform)
@@ -17,6 +18,11 @@ function M:init(tank, config)
   local shape = love.physics.newCircleShape(0, 0, 0.25)
   self.fixture = love.physics.newFixture(self.body, shape)
   self.fixture:setGroupIndex(-tank.groupIndex)
+
+  self.fixture:setUserData({
+    collisionType = "fireball",
+    fireball = self,
+  })
 
   local fireImage = self.game.resources.images.particles.fire
   local fireImageWidth, fireImageHeight = fireImage:getDimensions()
@@ -107,6 +113,20 @@ end
 function M:updateParticles(dt)
   self.fireParticles:update(dt)
   self.smokeParticles:update(dt)
+end
+
+function M:setDead(dead)
+  if dead == self.dead then
+    return
+  end
+
+  self.dead = dead
+
+  if not self.dead then
+    return
+  end
+
+  self.fixture:setSensor(true)
 end
 
 function M:fixedUpdateDespawn(dt)

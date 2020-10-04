@@ -48,6 +48,11 @@ function M:init(game, config)
 
     self.fixture = love.physics.newFixture(self.body, shape)
     self.fixture:setFriction(1)
+
+    self.fixture:setUserData({
+      collisionType = "terrain",
+      terrain = self,
+    })
   end
 
   local r, g, b, a = unpack(config.color)

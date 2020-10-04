@@ -19,6 +19,28 @@ function M:init(resources)
   self.cameras = {}
 
   self.world = love.physics.newWorld()
+  self.collisions = {}
+
+  self.collisionHandlers = {
+    fireball = {
+      terrain = self.handleFireballTerrainCollision
+    },
+  }
+
+  local function beginContact(fixture1, fixture2, contact)
+    local userData1 = fixture1:getUserData()
+    local userData2 = fixture2:getUserData()
+
+    if not userData1 or not userData2 then
+      return
+    end
+
+    self.collisions[#self.collisions + 1] = userData1
+    self.collisions[#self.collisions + 1] = userData2
+  end
+
+  self.world:setCallbacks(beginContact, nil, nil, nil)
+
   self.nextGroupIndex = 1
 
   self.fireballs = {}
@@ -145,6 +167,30 @@ function M:fixedUpdate(dt)
   end
 
   self.world:update(dt)
+
+  for i = 1, #self.collisions, 2 do
+    local userData1 = self.collisions[i]
+    local userData2 = self.collisions[i + 1]
+
+    local collisionType1 = userData1.collisionType
+    local collisionType2 = userData2.collisionType
+
+    local collisionHandler1 = self.collisionHandlers[collisionType1] and
+      self.collisionHandlers[collisionType1][collisionType2]
+
+    local collisionHandler2 = self.collisionHandlers[collisionType2] and
+      self.collisionHandlers[collisionType2][collisionType1]
+
+    if collisionHandler1 then
+      collisionHandler1(self, userData1, userData2)
+    elseif collisionHandler2 then
+      collisionHandler2(self, userData2, userData1)
+    end
+  end
+
+  while #self.collisions >= 1 do
+    self.collisions[#self.collisions] = nil
+  end
 
   for _, tank in ipairs(self.tanks) do
     tank:fixedUpdateAnimation(dt)
@@ -309,6 +355,10 @@ end
 function M:mousemoved(x, y, dx, dy, istouch)
   self.accumulatedMouseDx = self.accumulatedMouseDx + dx
   self.accumulatedMouseDy = self.accumulatedMouseDy + dy
+end
+
+function M:handleFireballTerrainCollision(fireballData, terrainData)
+  fireballData.fireball:setDead(true)
 end
 
 return M
