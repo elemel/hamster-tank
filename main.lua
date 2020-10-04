@@ -22,7 +22,7 @@ function love.load()
 
   local music = love.audio.newSource("resources/hamsterTank.ogg", "stream")
   music:setLooping(true)
-  -- music:play()
+  music:play()
 end
 
 function love.update(dt)
