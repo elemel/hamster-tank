@@ -40,7 +40,7 @@ function M:init(tank, config)
   local smokeImage = self.game.resources.images.particles.smoke
   local smokeImageWidth, smokeImageHeight = smokeImage:getDimensions()
 
-  self.smokeParticles = love.graphics.newParticleSystem(smokeImage, 64)
+  self.smokeParticles = love.graphics.newParticleSystem(smokeImage, 16)
 
   self.smokeParticles:setParticleLifetime(0.5)
   self.smokeParticles:setEmissionRate(32)
@@ -49,8 +49,8 @@ function M:init(tank, config)
 
   self.smokeParticles:setColors(
     0, 0, 0, 0,
-    0, 0, 0, 0.5,
     0, 0, 0, 0.25,
+    0, 0, 0, 0.125,
     0, 0, 0, 0)
 
   self.smokeParticles:setEmissionArea("ellipse", 0.25, 0.25)
