@@ -161,6 +161,10 @@ function M:fixedUpdate(dt)
   for i = #self.tanks, 1, -1 do
     self.tanks[i]:fixedUpdateDespawn(dt)
   end
+
+  for i = #self.fireballs, 1, -1 do
+    self.fireballs[i]:fixedUpdateDespawn(dt)
+  end
 end
 
 function M:draw()

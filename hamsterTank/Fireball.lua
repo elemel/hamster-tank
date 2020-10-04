@@ -5,6 +5,7 @@ local M = Class.new()
 
 function M:init(tank, config)
   self.game = tank.game
+  self.despawnDelay = 8
 
   local x, y, angle = unpack(config.transform)
 
@@ -106,6 +107,14 @@ end
 function M:updateParticles(dt)
   self.fireParticles:update(dt)
   self.smokeParticles:update(dt)
+end
+
+function M:fixedUpdateDespawn(dt)
+  self.despawnDelay = self.despawnDelay - dt
+
+  if self.despawnDelay < 0 then
+    self:destroy()
+  end
 end
 
 return M
