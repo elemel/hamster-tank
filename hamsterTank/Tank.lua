@@ -135,13 +135,49 @@ function M:fixedUpdateControl(dt)
   end
 
   if self.jumpInput and not self.previousJumpInput then
-    local downX, downY = self.body:getWorldVector(0, 1)
-    local jumpImpulse = 64
+    local x, y = self.body:getPosition()
+    local downX, downY = utils.normalize2(x, y)
+    local rayLength = 2
 
-    for _, wheel in ipairs(self.wheels) do
-      local wheelX, wheelY = wheel.body:getWorldCenter()
-      wheel.body:applyLinearImpulse(downX * jumpImpulse, downY * jumpImpulse, wheelX, wheelY)
-      self.body:applyLinearImpulse(-downX * jumpImpulse, -downY * jumpImpulse, wheelX, wheelY)
+    local intersectionFixture
+
+    local intersectionX = 0
+    local intersectionY = 0
+
+    local intersectionNormalX = 0
+    local intersectionNormalY = 0
+
+    self.game.world:rayCast(x, y, x + downX * rayLength, y + downY * rayLength, function(fixture, x, y, xn, yn, fraction)
+      if fixture:getShape():getType() ~= "chain" then
+        return 1
+      end
+
+      intersectionFixture = fixture
+
+      intersectionX = x
+      intersectionY = y
+
+      intersectionNormalX = xn
+      intersectionNormalY = yn
+
+      return 0
+    end)
+
+    if intersectionFixture then
+      local jumpVelocity = 16
+      local impulse = jumpVelocity * self:getTotalMass()
+      self.body:applyLinearImpulse(-downX * impulse, -downY * impulse)
+
+      local bodyUpX, bodyUpY = self.body:getWorldVector(0, -1)
+      local upsideDownAlignment = utils.dot2(bodyUpX, bodyUpY, downX, downY)
+
+      local leftX = -downY
+      local leftY = downX
+
+      local leftAlignment = utils.dot2(bodyUpX, bodyUpY, leftX, leftY)
+
+      local angularVelocity = 8 * utils.sign(leftAlignment) * math.max(upsideDownAlignment, 0)
+      self.body:setAngularVelocity(angularVelocity)
     end
   end
 
@@ -195,6 +231,20 @@ function M:fixedUpdateDespawn(dt)
   if distance > 256 then
     self:destroy()
   end
+end
+
+function M:getTotalMass()
+  local result = self.body:getMass()
+
+  for _, turret in ipairs(self.turrets) do
+    result = result + turret.body:getMass()
+  end
+
+  for _, wheel in ipairs(self.wheels) do
+    result = result + wheel.body:getMass()
+  end
+
+  return result
 end
 
 return M

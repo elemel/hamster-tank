@@ -124,10 +124,15 @@ local function clamp(x, x1, x2)
   return min(max(x, x1), x2)
 end
 
+local function dot2(x1, y1, x2, y2)
+  return x1 * x2 + y1 * y2
+end
+
 return {
   clamp = clamp,
   decompose2 = decompose2,
   distance2 = distance2,
+  dot2 = dot2,
   length2 = length2,
   mix = mix,
   mixTransforms = mixTransforms,
