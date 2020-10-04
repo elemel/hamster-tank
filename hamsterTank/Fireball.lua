@@ -25,7 +25,6 @@ function M:init(tank, config)
   self.fireParticles:setParticleLifetime(0.25)
   self.fireParticles:setEmissionRate(256)
   self.fireParticles:setEmitterLifetime(4)
-
   self.fireParticles:setLinearDamping(1)
 
   self.fireParticles:setColors(
@@ -36,10 +35,29 @@ function M:init(tank, config)
     0, 0, 0, 0.5)
 
   self.fireParticles:setEmissionArea("ellipse", 0.25, 0.25)
+  self.fireParticles:setSizes(0.75 / fireImageHeight)
 
-  self.fireParticles:setSizes(1 / fireImageHeight)
+  local smokeImage = self.game.resources.images.particles.smoke
+  local smokeImageWidth, smokeImageHeight = smokeImage:getDimensions()
+
+  self.smokeParticles = love.graphics.newParticleSystem(smokeImage, 64)
+
+  self.smokeParticles:setParticleLifetime(0.5)
+  self.smokeParticles:setEmissionRate(32)
+  self.smokeParticles:setEmitterLifetime(4)
+  self.smokeParticles:setLinearDamping(4)
+
+  self.smokeParticles:setColors(
+    0, 0, 0, 0,
+    0, 0, 0, 0.5,
+    0, 0, 0, 0.25,
+    0, 0, 0, 0)
+
+  self.smokeParticles:setEmissionArea("ellipse", 0.25, 0.25)
+  self.smokeParticles:setSizes(1.5 / smokeImageHeight)
 
   self:controlFireParticles()
+  self:controlSmokeParticles()
 
   self.game.fireballs[#self.game.fireballs + 1] = self
 end
@@ -56,6 +74,7 @@ end
 
 function M:fixedUpdateParticles(dt)
   self:controlFireParticles()
+  self:controlSmokeParticles()
 end
 
 function M:controlFireParticles()
@@ -71,8 +90,22 @@ function M:controlFireParticles()
   self.fireParticles:setLinearAcceleration(-downX * linearAcceleration, -downY * linearAcceleration)
 end
 
+function M:controlSmokeParticles()
+  local x, y = self.body:getPosition()
+  local linearVelocityX, linearVelocityY = self.body:getLinearVelocity()
+
+  local downX, downY = utils.normalize2(x, y)
+  local linearAcceleration = 8
+
+  self.smokeParticles:setPosition(x, y)
+  self.smokeParticles:setDirection(math.atan2(linearVelocityY, linearVelocityX))
+  self.smokeParticles:setSpeed(utils.length2(linearVelocityX, linearVelocityY))
+  self.smokeParticles:setLinearAcceleration(-downX * linearAcceleration, -downY * linearAcceleration)
+end
+
 function M:updateParticles(dt)
   self.fireParticles:update(dt)
+  self.smokeParticles:update(dt)
 end
 
 return M

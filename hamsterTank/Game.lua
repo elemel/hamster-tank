@@ -185,9 +185,12 @@ function M:draw()
     end
 
     love.graphics.push("all")
-    love.graphics.setBlendMode("add")
 
     for _, fireball in ipairs(self.fireballs) do
+      love.graphics.setBlendMode("alpha")
+      love.graphics.draw(fireball.smokeParticles)
+
+      love.graphics.setBlendMode("add")
       love.graphics.draw(fireball.fireParticles)
     end
 

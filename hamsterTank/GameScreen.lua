@@ -14,6 +14,7 @@ function M:init()
 
       particles = {
         fire = love.graphics.newImage("resources/images/particles/fire.png"),
+        smoke = love.graphics.newImage("resources/images/particles/smoke.png"),
       },
     },
   }
