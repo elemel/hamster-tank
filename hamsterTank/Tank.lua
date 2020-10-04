@@ -78,8 +78,8 @@ function M:init(game, config)
     radius = 0.5,
     maxDistance = 0.5,
 
-    minMuzzleVelocity = 12,
-    maxMuzzleVelocity = 24,
+    minMuzzleVelocity = 16,
+    maxMuzzleVelocity = 32,
   })
 
   Wheel.new(self, {

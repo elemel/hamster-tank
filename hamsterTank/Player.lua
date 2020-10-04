@@ -32,7 +32,7 @@ function M:fixedUpdateSpawn(dt)
   end
 
   if not self.tank then
-    self.despawnDelay = 1
+    self.despawnDelay = 2
 
     local rayAngle = love.math.random() * 2 * math.pi
     local rayLength = 256
