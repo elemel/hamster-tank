@@ -77,8 +77,10 @@ function M:fixedUpdateSpawn(dt)
 
       self.tank = Tank.new(self.game, {
         transform = {spawnX, spawnY, spawnAngle},
+
         jumpInput = love.keyboard.isDown(self.jumpKey),
         suicideInput = love.keyboard.isDown(self.suicideKey),
+        fireInput = love.mouse.isDown(1)
       })
 
       local x, y = self.tank.body:getPosition()
@@ -97,8 +99,10 @@ function M:fixedUpdateInput(dt)
 
   self.tank.previousJumpInput = self.tank.jumpInput
   self.tank.previousSuicideInput = self.tank.suicideInput
+  self.tank.previousFireInput = self.tank.fireInput
 
   self.tank.suicideInput = love.keyboard.isDown(self.suicideKey)
+  self.tank.fireInput = love.mouse.isDown(1)
 
   local leftInput = love.keyboard.isDown(self.leftKey)
   local rightInput = love.keyboard.isDown(self.rightKey)

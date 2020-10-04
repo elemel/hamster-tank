@@ -11,6 +11,10 @@ function M:init()
         paw = love.graphics.newImage("resources/images/hamster/paw.png"),
         trunk = love.graphics.newImage("resources/images/hamster/trunk.png"),
       },
+
+      particles = {
+        fire = love.graphics.newImage("resources/images/particles/fire.png"),
+      },
     },
   }
 

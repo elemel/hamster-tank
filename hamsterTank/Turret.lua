@@ -1,4 +1,5 @@
 local Class = require("hamsterTank.Class")
+local Fireball = require("hamsterTank.Fireball")
 local Sprite = require("hamsterTank.Sprite")
 local utils = require("hamsterTank.utils")
 
@@ -84,6 +85,31 @@ function M:fixedUpdateControl(dt)
     local length = utils.distance2(x1, y1, targetX, targetY)
 
     joint:setLength(length)
+  end
+
+  if self.tank.fireInput and not self.tank.previousFireInput then
+    local x, y = self.body:getPosition()
+
+    local localX, localY = self.tank.body:getLocalPoint(x, y)
+    local angle = math.atan2(localY, localX) + 0.5 * math.pi + self.tank.body:getAngle()
+
+    local directionX = math.cos(angle - 0.5 * math.pi)
+    local directionY = math.sin(angle - 0.5 * math.pi)
+
+    local linearVelocityX, linearVelocityY = self.body:getLinearVelocity()
+
+    local fireball = Fireball.new(self.tank, {
+      transform = {x, y, angle},
+
+      linearVelocityX = linearVelocityX,
+      linearVelocityY = linearVelocityY,
+    })
+
+    local t = utils.clamp(0.5 - 0.5 * self.tank.aimInputY, 0, 1)
+    local impulse = utils.mix(3, 6, t)
+
+    fireball.body:applyLinearImpulse(impulse * directionX, impulse * directionY)
+    self.body:applyLinearImpulse(-impulse * directionX, -impulse * directionY)
   end
 end
 

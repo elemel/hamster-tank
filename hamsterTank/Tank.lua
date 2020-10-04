@@ -23,6 +23,9 @@ function M:init(game, config)
   self.suicideInput = config.suicideInput or false
   self.previousSuicideInput = self.suicideInput
 
+  self.fireInput = config.fireInput or false
+  self.previousFireInput = self.fireInput
+
   local transform = love.math.newTransform(unpack(config.transform))
   local x, y, angle = utils.decompose2(transform)
 

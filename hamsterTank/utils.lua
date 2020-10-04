@@ -1,4 +1,6 @@
 local acos = math.acos
+local max = math.max
+local min = math.min
 local remove = table.remove
 local sqrt = math.sqrt
 
@@ -114,10 +116,20 @@ local function distance2(x1, y1, x2, y2)
   return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))
 end
 
+local function mix(x1, x2, t)
+  return (1 - t) * x1 + t * x2
+end
+
+local function clamp(x, x1, x2)
+  return min(max(x, x1), x2)
+end
+
 return {
+  clamp = clamp,
   decompose2 = decompose2,
   distance2 = distance2,
   length2 = length2,
+  mix = mix,
   mixTransforms = mixTransforms,
   normalize2 = normalize2,
   removeLast = removeLast,

@@ -21,6 +21,7 @@ function M:init(resources)
   self.world = love.physics.newWorld()
   self.nextGroupIndex = 1
 
+  self.fireballs = {}
   self.players = {}
   self.sprites = {}
   self.tanks = {}
@@ -70,7 +71,7 @@ function M:init(resources)
     },
   })
 
-  for i = 1, 4 do
+  for i = 1, 1 do
     local camera = Camera.new(self)
 
     if i == 1 then
@@ -101,6 +102,10 @@ function M:update(dt)
 
   for _, sprite in ipairs(self.sprites) do
     sprite:updateInterpolation(dt)
+  end
+
+  for _, fireball in ipairs(self.fireballs) do
+    fireball:updateParticles(dt)
   end
 end
 
@@ -145,6 +150,10 @@ function M:fixedUpdate(dt)
     tank:fixedUpdateAnimation(dt)
   end
 
+  for _, fireball in ipairs(self.fireballs) do
+    fireball:fixedUpdateParticles(dt)
+  end
+
   for _, player in ipairs(self.players) do
     player:fixedUpdateCamera(dt)
   end
@@ -175,6 +184,14 @@ function M:draw()
       love.graphics.draw(sprite.image, sprite.interpolatedImageToWorld)
     end
 
+    love.graphics.push("all")
+    love.graphics.setBlendMode("add")
+
+    for _, fireball in ipairs(self.fireballs) do
+      love.graphics.draw(fireball.fireParticles)
+    end
+
+    love.graphics.pop()
     love.graphics.pop()
     love.graphics.push("all")
 
