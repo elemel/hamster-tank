@@ -58,6 +58,8 @@ function M:init(tank, config)
     imageToLocal = {0, 0, 0, scale, scale, 0.5 * imageWidth, 0.5 * imageHeight},
   })
 
+  self.cooldown = 0
+
   self.tank.turrets[#self.tank.turrets + 1] = self
 end
 
@@ -83,6 +85,8 @@ function M:destroy()
 end
 
 function M:fixedUpdateControl(dt)
+  self.cooldown = self.cooldown - dt
+
   for _, joint in ipairs(self.distanceJoints) do
     local x1, y1, x2, y2 = joint:getAnchors()
 
@@ -96,31 +100,37 @@ function M:fixedUpdateControl(dt)
   end
 
   if self.tank.fireInput and not self.tank.previousFireInput then
-    local x, y = self.body:getPosition()
+    if self.cooldown < 0 then
+      self.cooldown = 3
 
-    local localX, localY = self.tank.body:getLocalPoint(x, y)
-    local angle = math.atan2(localY, localX) + 0.5 * math.pi + self.tank.body:getAngle()
+      local x, y = self.body:getPosition()
 
-    local directionX = math.cos(angle - 0.5 * math.pi)
-    local directionY = math.sin(angle - 0.5 * math.pi)
+      local localX, localY = self.tank.body:getLocalPoint(x, y)
+      local angle = math.atan2(localY, localX) + 0.5 * math.pi + self.tank.body:getAngle()
 
-    local linearVelocityX, linearVelocityY = self.body:getLinearVelocity()
+      local directionX = math.cos(angle - 0.5 * math.pi)
+      local directionY = math.sin(angle - 0.5 * math.pi)
 
-    local fireball = Fireball.new(self.tank, {
-      transform = {x, y, angle},
+      local linearVelocityX, linearVelocityY = self.body:getLinearVelocity()
 
-      linearVelocityX = linearVelocityX,
-      linearVelocityY = linearVelocityY,
-    })
+      local fireball = Fireball.new(self.tank, {
+        transform = {x, y, angle},
 
-    self.game.resources.sounds.fire:clone():play()
+        linearVelocityX = linearVelocityX,
+        linearVelocityY = linearVelocityY,
+      })
 
-    local t = utils.clamp(0.5 - 0.5 * self.tank.aimInputY, 0, 1)
-    local muzzleVelocity = utils.mix(self.minMuzzleVelocity, self.maxMuzzleVelocity, t)
-    local impulse = muzzleVelocity * fireball.body:getMass()
+      self.game.resources.sounds.fire:clone():play()
 
-    fireball.body:applyLinearImpulse(impulse * directionX, impulse * directionY)
-    self.body:applyLinearImpulse(-impulse * directionX, -impulse * directionY)
+      local t = utils.clamp(0.5 - 0.5 * self.tank.aimInputY, 0, 1)
+      local muzzleVelocity = utils.mix(self.minMuzzleVelocity, self.maxMuzzleVelocity, t)
+      local impulse = muzzleVelocity * fireball.body:getMass()
+
+      fireball.body:applyLinearImpulse(impulse * directionX, impulse * directionY)
+      self.body:applyLinearImpulse(-impulse * directionX, -impulse * directionY)
+    else
+      self.game.resources.sounds.cooldown:clone():play()
+    end
   end
 end
 

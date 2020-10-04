@@ -19,6 +19,7 @@ function M:init(joystick)
     },
 
     sounds = {
+      cooldown = love.audio.newSource("resources/sounds/cooldown.ogg", "static"),
       fire = love.audio.newSource("resources/sounds/fire.ogg", "static"),
       fireballTankCollision = love.audio.newSource("resources/sounds/fireballTankCollision.ogg", "static"),
       fireballTerrainCollision = love.audio.newSource("resources/sounds/fireballTerrainCollision.ogg", "static"),
