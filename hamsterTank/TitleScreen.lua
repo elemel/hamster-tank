@@ -24,7 +24,8 @@ function M:keypressed(key, scancode, isrepeat)
   if key == "return" then
     local GameScreen = require("hamsterTank.GameScreen")
     screen = GameScreen.new()
-    return
+  elseif key == "escape" then
+    love.event.quit()
   end
 end
 
@@ -32,6 +33,21 @@ function M:resize(w, h)
 end
 
 function M:mousemoved(x, y, dx, dy, istouch)
+end
+
+function M:joystickadded(joystick)
+end
+
+function M:joystickremoved(joystick)
+end
+
+function M:gamepadpressed(joystick, button)
+  if button == "a" then
+    local GameScreen = require("hamsterTank.GameScreen")
+    screen = GameScreen.new(joystick)
+  elseif button == "b" then
+    love.event.quit()
+  end
 end
 
 return M

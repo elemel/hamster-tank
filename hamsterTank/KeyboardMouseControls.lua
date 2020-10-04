@@ -11,7 +11,10 @@ function M:init(config)
   self.downKey = config.downKey or "s"
 
   self.jumpKey = config.jumpKey or "space"
-  self.suicideKey = config.suicideKey or "backspace"
+
+  self.spawnKey = config.spawnKey or "enter"
+  self.respawnKey = config.respawnKey or "backspace"
+  self.despawnKey = config.despawnKey or "escape"
 
   self.aimInputX = 0
   self.aimInputY = 0
@@ -26,12 +29,20 @@ function M:getJumpInput()
   return love.keyboard.isDown(self.jumpKey)
 end
 
-function M:getSuicideInput()
-  return love.keyboard.isDown(self.suicideKey)
-end
-
 function M:getFireInput()
   return love.mouse.isDown(1)
+end
+
+function M:getSpawnInput()
+  return love.keyboard.isDown(self.spawnKey)
+end
+
+function M:getRespawnInput()
+  return love.keyboard.isDown(self.respawnKey)
+end
+
+function M:getDespawnInput()
+  return love.keyboard.isDown(self.despawnKey)
 end
 
 function M:getMoveInput()

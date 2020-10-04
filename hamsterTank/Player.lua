@@ -14,7 +14,13 @@ function M:init(game, camera, controls, config)
 end
 
 function M:destroy()
+  if self.tank and not self.tank.dead then
+    self.tank:setDead(true)
+    self.tank = nil
+  end
+
   utils.removeLast(self.game.players, self)
+  self.camera:destroy()
 end
 
 function M:fixedUpdateSpawn(dt)
@@ -74,7 +80,6 @@ function M:fixedUpdateSpawn(dt)
         transform = {spawnX, spawnY, spawnAngle},
 
         jumpInput = self.controls:getJumpInput(),
-        suicideInput = self.controls:getSuicideInput(),
         fireInput = self.controls:getFireInput(),
       })
 
@@ -93,10 +98,8 @@ function M:fixedUpdateInput(dt)
   end
 
   self.tank.previousJumpInput = self.tank.jumpInput
-  self.tank.previousSuicideInput = self.tank.suicideInput
   self.tank.previousFireInput = self.tank.fireInput
 
-  self.tank.suicideInput = self.controls:getSuicideInput()
   self.tank.fireInput = self.controls:getFireInput()
   self.tank.jumpInput = self.controls:getJumpInput()
 

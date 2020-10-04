@@ -1,5 +1,6 @@
 local Camera = require("hamsterTank.Camera")
 local Class = require("hamsterTank.Class")
+local GamepadControls = require("hamsterTank.GamepadControls")
 local KeyboardMouseControls = require("hamsterTank.KeyboardMouseControls")
 local Player = require("hamsterTank.Player")
 local Tank = require("hamsterTank.Tank")
@@ -8,7 +9,7 @@ local utils = require("hamsterTank.utils")
 
 local M = Class.new()
 
-function M:init(resources)
+function M:init(resources, joystick)
   self.resources = resources
 
   self.fixedDt = 1 / 60
@@ -48,6 +49,8 @@ function M:init(resources)
   self.sprites = {}
   self.tanks = {}
   self.terrains = {}
+
+  self.gamepadPlayers = {}
 
   self.wheelRadius = 32
   self.wheelGravity = 32
@@ -93,11 +96,18 @@ function M:init(resources)
     },
   })
 
-  for i = 1, 1 do
+  local controls
+
+  if joystick then
+    local camera = Camera.new(self)
+    local controls = GamepadControls.new(joystick)
+
+    self.gamepadPlayers[joystick] = Player.new(self, camera, controls, {})
+  else
     local camera = Camera.new(self)
     local controls = self.keyboardMouseControls
 
-    Player.new(self, camera, controls, {})
+    self.keyboardMousePlayer = Player.new(self, camera, controls, {})
   end
 
   self:resize(love.graphics.getDimensions())
@@ -364,6 +374,66 @@ function M:handleFireballTankCollision(fireballData, tankData)
   if not fireball.dead and not tank.dead then
     fireball:setDead(true)
     tank:setDead(true)
+  end
+end
+
+function M:joystickadded(joystick)
+  if joystick:isGamepad() and #self.players < 4 then
+    local camera = Camera.new(self)
+    local controls = GamepadControls.new(joystick)
+
+    self.gamepadPlayers[joystick] = Player.new(self, camera, controls, {})
+  end
+end
+
+function M:joystickremoved(joystick)
+  if self.gamepadPlayers[joystick] then
+    -- TODO
+  end
+end
+
+function M:keypressed(key, scancode, isrepeat)
+  if key == "return" and not self.keyboardMousePlayer and #self.players < 4 then
+    local camera = Camera.new(self)
+    local controls = self.keyboardMouseControls
+
+    self.keyboardMousePlayer = Player.new(self, camera, controls, {})
+    self:updateLayout()
+  elseif key == "escape" then
+    if self.keyboardMousePlayer then
+      self.keyboardMousePlayer:destroy()
+      self.keyboardMousePlayer = nil
+
+      if #self.players == 0 then
+        local TitleScreen = require("hamsterTank.TitleScreen")
+        screen = TitleScreen.new()
+      else
+        self:updateLayout()
+      end
+    else
+      local TitleScreen = require("hamsterTank.TitleScreen")
+      screen = TitleScreen.new()
+    end
+  end
+end
+
+function M:gamepadpressed(joystick, button)
+  if button == "a" and not self.gamepadPlayers[joystick] and #self.players < 4 then
+    local camera = Camera.new(self)
+    local controls = GamepadControls.new(joystick)
+
+    self.gamepadPlayers[joystick] = Player.new(self, camera, controls, {})
+    self:updateLayout()
+  elseif button == "b" and self.gamepadPlayers[joystick] then
+    self.gamepadPlayers[joystick]:destroy()
+    self.gamepadPlayers[joystick] = nil
+
+    if #self.players == 0 then
+      local TitleScreen = require("hamsterTank.TitleScreen")
+      screen = TitleScreen.new()
+    else
+      self:updateLayout()
+    end
   end
 end
 

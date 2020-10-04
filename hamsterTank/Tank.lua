@@ -22,9 +22,6 @@ function M:init(game, config)
   self.jumpInput = config.jumpInput or false
   self.previousJumpInput = self.jumpInput
 
-  self.suicideInput = config.suicideInput or false
-  self.previousSuicideInput = self.suicideInput
-
   self.fireInput = config.fireInput or false
   self.previousFireInput = self.fireInput
 
@@ -138,16 +135,6 @@ end
 
 function M:fixedUpdateControl(dt)
   if self.dead then
-    return
-  end
-
-  if self.suicideInput and not self.previousSuicideInput then
-    self:setDead(true)
-
-    local impulseSign = utils.sign(love.math.random() - 0.5)
-    local impulseMagnitude = (0.5 + 0.5 * love.math.random()) * 32
-
-    self.body:applyAngularImpulse(impulseSign * impulseMagnitude)
     return
   end
 

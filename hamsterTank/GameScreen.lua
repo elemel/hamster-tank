@@ -3,7 +3,7 @@ local Game = require("hamsterTank.Game")
 
 local M = Class.new()
 
-function M:init()
+function M:init(joystick)
   local resources = {
     images = {
       hamster = {
@@ -19,7 +19,7 @@ function M:init()
     },
   }
 
-  self.game = Game.new(resources)
+  self.game = Game.new(resources, joystick)
 end
 
 function M:update(dt)
@@ -31,11 +31,7 @@ function M:draw()
 end
 
 function M:keypressed(key, scancode, isrepeat)
-  if key == "escape" then
-    local TitleScreen = require("hamsterTank.TitleScreen")
-    screen = TitleScreen.new()
-    return
-  end
+  self.game:keypressed(key, scancode, isrepeat)
 end
 
 function M:resize(w, h)
@@ -44,6 +40,18 @@ end
 
 function M:mousemoved(x, y, dx, dy, istouch)
   self.game:mousemoved(x, y, dx, dy, istouch)
+end
+
+function M:joystickadded(joystick)
+  self.game:joystickadded(joystick)
+end
+
+function M:joystickremoved(joystick)
+  self.game:joystickremoved(joystick)
+end
+
+function M:gamepadpressed(joystick, button)
+  self.game:gamepadpressed(joystick, button)
 end
 
 return M

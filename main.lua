@@ -44,3 +44,15 @@ end
 function love.mousemoved(x, y, dx, dy, istouch)
   screen:mousemoved(x, y, dx, dy, istouch)
 end
+
+function love.joystickadded(joystick)
+  screen:joystickadded(joystick)
+end
+
+function love.joystickremoved(joystick)
+  screen:joystickremoved(joystick)
+end
+
+function love.gamepadpressed(joystick, button)
+  screen:gamepadpressed(joystick, button)
+end
