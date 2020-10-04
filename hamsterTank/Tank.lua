@@ -62,6 +62,9 @@ function M:init(game, config)
     transform = {0, -0.75, 0},
     radius = 0.5,
     maxDistance = 0.5,
+
+    minMuzzleVelocity = 12,
+    maxMuzzleVelocity = 24,
   })
 
   Wheel.new(self, {

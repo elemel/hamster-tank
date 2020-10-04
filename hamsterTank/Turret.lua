@@ -9,6 +9,9 @@ function M:init(tank, config)
   self.tank = tank
   self.game = self.tank.game
 
+  self.minMuzzleVelocity = config.minMuzzleVelocity
+  self.maxMuzzleVelocity = config.maxMuzzleVelocity
+
   local localX, localY, localAngle = unpack(config.transform)
   local x, y = self.tank.body:getWorldPoint(localX, localY)
   local angle = localAngle + self.tank.body:getAngle()
@@ -106,7 +109,8 @@ function M:fixedUpdateControl(dt)
     })
 
     local t = utils.clamp(0.5 - 0.5 * self.tank.aimInputY, 0, 1)
-    local impulse = utils.mix(3, 6, t)
+    local muzzleVelocity = utils.mix(self.minMuzzleVelocity, self.maxMuzzleVelocity, t)
+    local impulse = muzzleVelocity * fireball.body:getMass()
 
     fireball.body:applyLinearImpulse(impulse * directionX, impulse * directionY)
     self.body:applyLinearImpulse(-impulse * directionX, -impulse * directionY)
