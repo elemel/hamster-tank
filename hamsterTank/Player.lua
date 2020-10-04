@@ -9,6 +9,18 @@ function M:init(game, camera, controls, config)
   self.camera = camera
   self.controls = controls
 
+  self.nameText = love.graphics.newText(self.game.font, config.name)
+  self.controlsDescriptionText = love.graphics.newText(self.game.font, config.controlsDescription)
+
+  self.killCount = config.killCount or 0
+  self.deathCount = config.deathCount or 0
+
+  self.killCountText = love.graphics.newText(self.game.font, "Kills: " .. self.killCount)
+  self.deathCountText = love.graphics.newText(self.game.font, "Deaths: " .. self.deathCount)
+
+  self.respawnInput = controls:getRespawnInput()
+  self.previousRespawnInput = self.respawnInput
+
   self.despawnDelay = 0
   self.game.players[#self.game.players + 1] = self
 end
@@ -33,7 +45,7 @@ function M:fixedUpdateSpawn(dt)
   end
 
   if not self.tank then
-    self.despawnDelay = 2
+    self.despawnDelay = 1
 
     local rayAngle = love.math.random() * 2 * math.pi
     local rayLength = 256
@@ -97,6 +109,14 @@ function M:fixedUpdateInput(dt)
     return
   end
 
+  self.previousRespawnInput = self.respawnInput
+  self.respawnInput = self.controls:getRespawnInput()
+
+  if self.respawnInput and not self.previousRespawnInput and not self.tank.dead then
+    self.tank:setDead(true)
+    self:incrementDeathCount()
+  end
+
   self.tank.previousJumpInput = self.tank.jumpInput
   self.tank.previousFireInput = self.tank.fireInput
 
@@ -116,6 +136,16 @@ function M:fixedUpdateCamera(dt)
     local offset = 0.125 / scale
     self.camera:setLocalToWorld(x - offset * downX, y - offset * downY, angle)
   end
+end
+
+function M:incrementKillCount()
+  self.killCount = self.killCount + 1
+  self.killCountText:set("Kills: " .. self.killCount)
+end
+
+function M:incrementDeathCount()
+  self.deathCount = self.deathCount + 1
+  self.deathCountText:set("Deaths: " .. self.deathCount)
 end
 
 return M

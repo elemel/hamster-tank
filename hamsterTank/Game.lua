@@ -12,6 +12,8 @@ local M = Class.new()
 function M:init(resources, joystick)
   self.resources = resources
 
+  self.font = love.graphics.newFont(24)
+
   self.fixedDt = 1 / 60
   self.accumulatedDt = 0
 
@@ -43,6 +45,8 @@ function M:init(resources, joystick)
   self.world:setCallbacks(beginContact, nil, nil, nil)
 
   self.nextGroupIndex = 1
+  self.nextPlayerIndex = 1
+  self.nextGamepadIndex = 1
 
   self.fireballs = {}
   self.players = {}
@@ -102,12 +106,18 @@ function M:init(resources, joystick)
     local camera = Camera.new(self)
     local controls = GamepadControls.new(joystick)
 
-    self.gamepadPlayers[joystick] = Player.new(self, camera, controls, {})
+    self.gamepadPlayers[joystick] = Player.new(self, camera, controls, {
+      name = "Player #" .. self:generatePlayerIndex(),
+      controlsDescription = "Gamepad #" .. self:generateGamepadIndex(),
+    })
   else
     local camera = Camera.new(self)
     local controls = self.keyboardMouseControls
 
-    self.keyboardMousePlayer = Player.new(self, camera, controls, {})
+    self.keyboardMousePlayer = Player.new(self, camera, controls, {
+      name = "Player #" .. self:generatePlayerIndex(),
+      controlsDescription = "Keyboard & Mouse",
+    })
   end
 
   self:resize(love.graphics.getDimensions())
@@ -261,10 +271,38 @@ function M:draw()
 
     love.graphics.pop()
 
+    local marginX = 0.5 * self.font:getHeight()
+    local marginY = 0.25 * self.font:getHeight()
+
+    for _, player in ipairs(self.players) do
+      if player.camera == camera then
+        love.graphics.draw(
+          player.nameText,
+          camera.viewportX + marginX,
+          camera.viewportY + marginY)
+
+        love.graphics.draw(
+          player.controlsDescriptionText,
+          camera.viewportX + camera.viewportWidth - player.controlsDescriptionText:getWidth() - marginX,
+          camera.viewportY + marginY)
+
+        love.graphics.draw(
+          player.killCountText,
+          camera.viewportX + marginX,
+          camera.viewportY + camera.viewportHeight - player.killCountText:getHeight() - marginY)
+
+        love.graphics.draw(
+          player.deathCountText,
+          camera.viewportX + camera.viewportWidth - player.deathCountText:getWidth() - marginX,
+          camera.viewportY + camera.viewportHeight - player.deathCountText:getHeight() - marginY)
+      end
+    end
+
     love.graphics.push("all")
     love.graphics.setColor(0, 0, 0, 0.5)
     love.graphics.setLineWidth(2)
     love.graphics.rectangle("line", camera.viewportX, camera.viewportY, camera.viewportWidth, camera.viewportHeight)
+
     love.graphics.pop()
   end
 end
@@ -315,6 +353,18 @@ end
 function M:generateGroupIndex()
   local result = self.nextGroupIndex
   self.nextGroupIndex = self.nextGroupIndex + 1
+  return result
+end
+
+function M:generatePlayerIndex()
+  local result = self.nextPlayerIndex
+  self.nextPlayerIndex = self.nextPlayerIndex + 1
+  return result
+end
+
+function M:generateGamepadIndex()
+  local result = self.nextGamepadIndex
+  self.nextGamepadIndex = self.nextGamepadIndex + 1
   return result
 end
 
@@ -374,6 +424,16 @@ function M:handleFireballTankCollision(fireballData, tankData)
   if not fireball.dead and not tank.dead then
     fireball:setDead(true)
     tank:setDead(true)
+
+    for _, player in ipairs(self.players) do
+      if player.tank == tank then
+        player:incrementDeathCount()
+      end
+
+      if player.tank and player.tank.groupIndex == -fireball.fixture:getGroupIndex() then
+        player:incrementKillCount()
+      end
+    end
   end
 end
 
@@ -382,13 +442,26 @@ function M:joystickadded(joystick)
     local camera = Camera.new(self)
     local controls = GamepadControls.new(joystick)
 
-    self.gamepadPlayers[joystick] = Player.new(self, camera, controls, {})
+    self.gamepadPlayers[joystick] = Player.new(self, camera, controls, {
+      name = "Player #" .. self:generatePlayerIndex(),
+      controlsDescription = "Gamepad #" .. self:generateGamepadIndex(),
+    })
+
+    self:updateLayout()
   end
 end
 
 function M:joystickremoved(joystick)
   if self.gamepadPlayers[joystick] then
-    -- TODO
+    self.gamepadPlayers[joystick]:destroy()
+    self.gamepadPlayers[joystick] = nil
+
+    if #self.players == 0 then
+      local TitleScreen = require("hamsterTank.TitleScreen")
+      screen = TitleScreen.new()
+    else
+      self:updateLayout()
+    end
   end
 end
 
@@ -397,7 +470,11 @@ function M:keypressed(key, scancode, isrepeat)
     local camera = Camera.new(self)
     local controls = self.keyboardMouseControls
 
-    self.keyboardMousePlayer = Player.new(self, camera, controls, {})
+    self.keyboardMousePlayer = Player.new(self, camera, controls, {
+      name = "Player #" .. self:generatePlayerIndex(),
+      controlsDescription = "Keyboard & Mouse",
+    })
+
     self:updateLayout()
   elseif key == "escape" then
     if self.keyboardMousePlayer then
@@ -422,7 +499,11 @@ function M:gamepadpressed(joystick, button)
     local camera = Camera.new(self)
     local controls = GamepadControls.new(joystick)
 
-    self.gamepadPlayers[joystick] = Player.new(self, camera, controls, {})
+    self.gamepadPlayers[joystick] = Player.new(self, camera, controls, {
+      name = "Player #" .. self:generatePlayerIndex(),
+      controlsDescription = "Gamepad #" .. self:generateGamepadIndex(),
+    })
+
     self:updateLayout()
   elseif button == "b" and self.gamepadPlayers[joystick] then
     self.gamepadPlayers[joystick]:destroy()
