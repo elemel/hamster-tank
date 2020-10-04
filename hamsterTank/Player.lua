@@ -32,7 +32,7 @@ function M:fixedUpdateSpawn(dt)
   end
 
   if not self.tank then
-    self.despawnDelay = 0.5
+    self.despawnDelay = 1
 
     local rayAngle = love.math.random() * 2 * math.pi
     local rayLength = 256
@@ -68,7 +68,7 @@ function M:fixedUpdateSpawn(dt)
     end)
 
     if intersectionFixture then
-      local spawnDistance = 2
+      local spawnDistance = 4
 
       local spawnX = intersectionX - rayDirectionX * spawnDistance
       local spawnY = intersectionY - rayDirectionY * spawnDistance

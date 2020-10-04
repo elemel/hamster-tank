@@ -23,7 +23,8 @@ function M:init(resources)
 
   self.collisionHandlers = {
     fireball = {
-      terrain = self.handleFireballTerrainCollision
+      tank = self.handleFireballTankCollision,
+      terrain = self.handleFireballTerrainCollision,
     },
   }
 
@@ -93,7 +94,7 @@ function M:init(resources)
     },
   })
 
-  for i = 1, 1 do
+  for i = 1, 2 do
     local camera = Camera.new(self)
 
     if i == 1 then
@@ -358,7 +359,21 @@ function M:mousemoved(x, y, dx, dy, istouch)
 end
 
 function M:handleFireballTerrainCollision(fireballData, terrainData)
-  fireballData.fireball:setDead(true)
+  local fireball = fireballData.fireball
+
+  if not fireball.dead then
+    fireball:setDead(true)
+  end
+end
+
+function M:handleFireballTankCollision(fireballData, tankData)
+  local fireball = fireballData.fireball
+  local tank = tankData.tank
+
+  if not fireball.dead and not tank.dead then
+    fireball:setDead(true)
+    tank:setDead(true)
+  end
 end
 
 return M

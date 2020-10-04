@@ -18,6 +18,11 @@ function M:init(tank, config)
   self.fixture:setGroupIndex(-self.tank.groupIndex)
   self.fixture:setFriction(2)
 
+  self.fixture:setUserData({
+    collisionType = "tank",
+    tank = self.tank,
+  })
+
   local axisX, axisY = self.body:getWorldVector(0, -1)
   self.joint = love.physics.newWheelJoint(self.tank.body, self.body, x, y, axisX, axisY)
 

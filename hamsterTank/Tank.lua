@@ -36,13 +36,28 @@ function M:init(game, config)
   self.leftFixture = love.physics.newFixture(self.body, leftShape)
   self.leftFixture:setGroupIndex(-self.groupIndex)
 
+  self.leftFixture:setUserData({
+    collisionType = "tank",
+    tank = self,
+  })
+
   local centerShape = love.physics.newRectangleShape(1.5, 1.5)
   self.centerFixture = love.physics.newFixture(self.body, centerShape)
   self.centerFixture:setGroupIndex(-self.groupIndex)
 
+  self.centerFixture:setUserData({
+    collisionType = "tank",
+    tank = self,
+  })
+
   local rightShape = love.physics.newCircleShape(0.75, 0, 0.75)
   self.rightFixture = love.physics.newFixture(self.body, rightShape)
   self.rightFixture:setGroupIndex(-self.groupIndex)
+
+  self.rightFixture:setUserData({
+    collisionType = "tank",
+    tank = self,
+  })
 
   local image = self.game.resources.images.hamster.trunk
   local imageWidth, imageHeight = image:getDimensions()

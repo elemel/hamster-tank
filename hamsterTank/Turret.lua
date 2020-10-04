@@ -28,6 +28,11 @@ function M:init(tank, config)
   self.fixture = love.physics.newFixture(self.body, shape)
   self.fixture:setGroupIndex(-self.tank.groupIndex)
 
+  self.fixture:setUserData({
+    collisionType = "tank",
+    tank = self.tank,
+  })
+
   local x2, y2 = self.body:getPosition()
 
   self.ropeJoint = love.physics.newRopeJoint(self.tank.body, self.body, x, y, x, y, self.maxDistance)
