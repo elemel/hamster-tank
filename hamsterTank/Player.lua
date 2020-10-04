@@ -22,6 +22,7 @@ function M:init(game, camera, controls, config)
   self.previousRespawnInput = self.respawnInput
 
   self.despawnDelay = 0
+  self.camera.fade = 1
   self.game.players[#self.game.players + 1] = self
 end
 
@@ -36,8 +37,12 @@ function M:destroy()
 end
 
 function M:fixedUpdateSpawn(dt)
+  self.camera.fade = self.camera.fade - dt
+
   if self.tank and (self.tank.dead or self.tank.destroyed) then
     self.despawnDelay = self.despawnDelay - dt
+
+    self.camera.fade = 1 - self.despawnDelay
 
     if self.despawnDelay < 0 then
       self.tank = nil

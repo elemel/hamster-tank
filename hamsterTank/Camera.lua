@@ -32,6 +32,8 @@ function M:init(game)
   self.previousWorldToScreen = love.math.newTransform():apply(self.worldToScreen)
   self.interpolatedWorldToScreen = love.math.newTransform():apply(self.worldToScreen)
 
+  self.fade = 0.5
+
   self.game.cameras[#self.game.cameras + 1] = self
 end
 

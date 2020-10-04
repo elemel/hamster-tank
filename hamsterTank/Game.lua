@@ -271,6 +271,17 @@ function M:draw()
 
     love.graphics.pop()
 
+    if camera.fade > 0 then
+      love.graphics.push("all")
+      love.graphics.setColor(0, 0, 0, camera.fade)
+
+      love.graphics.rectangle("fill",
+        camera.viewportX, camera.viewportY,
+        camera.viewportWidth, camera.viewportHeight)
+
+      love.graphics.pop()
+    end
+
     local marginX = 0.5 * self.font:getHeight()
     local marginY = 0.25 * self.font:getHeight()
 
