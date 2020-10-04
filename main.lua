@@ -11,7 +11,6 @@ function love.load()
   })
 
   love.physics.setMeter(1)
-  love.graphics.setBackgroundColor(0.25, 0.75, 1, 1)
 
   -- Work-around for game hanging while the mouse is pressed in relative mode
   -- in LÖVE 11.3

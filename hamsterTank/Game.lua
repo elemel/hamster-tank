@@ -70,7 +70,7 @@ function M:init(resources)
     },
   })
 
-  for i = 1, 1 do
+  for i = 1, 4 do
     local camera = Camera.new(self)
 
     if i == 1 then
@@ -161,6 +161,8 @@ function M:draw()
     love.graphics.setScissor(
       camera.viewportX, camera.viewportY, camera.viewportWidth, camera.viewportHeight)
 
+    love.graphics.clear(0.25, 0.75, 1, 1)
+
     love.graphics.replaceTransform(camera.interpolatedWorldToScreen)
     local _, _, _, scale = utils.decompose2(camera.interpolatedWorldToScreen)
     love.graphics.setLineWidth(1 / scale)
@@ -245,16 +247,38 @@ end
 
 function M:updateLayout()
   local width, height = love.graphics.getDimensions()
+  local scale = 1 / 24
 
   if #self.cameras == 1 then
     self.cameras[1]:setViewport(0, 0, width, height)
-    self.cameras[1]:setScale(1 / 24)
-  else
-    self.cameras[1]:setViewport(0, 0, 0.5 * width, height)
-    self.cameras[1]:setScale(1 / 32)
+    self.cameras[1]:setScale(scale)
+  elseif #self.cameras == 2 then
+    self.cameras[1]:setViewport(0, 0, width, 0.5 * height)
+    self.cameras[1]:setScale(scale)
 
-    self.cameras[2]:setViewport(0.5 * width, 0, 0.5 * width, height)
-    self.cameras[1]:setScale(1 / 32)
+    self.cameras[2]:setViewport(0, 0.5 * height, width, 0.5 * height)
+    self.cameras[2]:setScale(scale)
+  elseif #self.cameras == 3 then
+    self.cameras[1]:setViewport(0.25 * width, 0, 0.5 * width, 0.5 * height)
+    self.cameras[1]:setScale(scale)
+
+    self.cameras[2]:setViewport(0, 0.5 * height, 0.5 * width, 0.5 * height)
+    self.cameras[2]:setScale(scale)
+
+    self.cameras[3]:setViewport(0.5 * width, 0.5 * height, 0.5 * width, 0.5 * height)
+    self.cameras[3]:setScale(scale)
+  elseif #self.cameras == 4 then
+    self.cameras[1]:setViewport(0, 0, 0.5 * width, 0.5 * height)
+    self.cameras[1]:setScale(scale)
+
+    self.cameras[2]:setViewport(0.5 * width, 0, 0.5 * width, 0.5 * height)
+    self.cameras[2]:setScale(scale)
+
+    self.cameras[3]:setViewport(0, 0.5 * height, 0.5 * width, 0.5 * height)
+    self.cameras[3]:setScale(scale)
+
+    self.cameras[4]:setViewport(0.5 * width, 0.5 * height, 0.5 * width, 0.5 * height)
+    self.cameras[4]:setScale(scale)
   end
 end
 
