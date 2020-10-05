@@ -87,12 +87,22 @@ end
 function M:fixedUpdateControl(dt)
   self.cooldown = self.cooldown - dt
 
+  local x, y = self.body:getPosition()
+  local angle = self.body:getAngle()
+
+  local upX, upY = utils.normalize2(-x, -y)
+  local rightAngle = math.atan2(upY, upX) + 0.5 * math.pi
+
+  local worldAimInputX, worldAimInputY = utils.rotate2(
+    self.tank.aimInputX, self.tank.aimInputY, rightAngle)
+
   for _, joint in ipairs(self.distanceJoints) do
     local x1, y1, x2, y2 = joint:getAnchors()
 
-    local targetX, targetY = self.tank.body:getWorldPoint(
-      self.localX + self.tank.aimInputX * self.maxDistance,
-      self.localY + self.tank.aimInputY * self.maxDistance)
+    local targetX, targetY = self.tank.body:getWorldPoint(self.localX, self.localY)
+
+    targetX = targetX + worldAimInputX * self.maxDistance
+    targetY = targetY + worldAimInputY * self.maxDistance
 
     local length = utils.distance2(x1, y1, targetX, targetY)
 
@@ -102,14 +112,6 @@ function M:fixedUpdateControl(dt)
   if self.tank.fireInput and not self.tank.previousFireInput then
     if self.cooldown < 0 then
       self.cooldown = 3
-
-      local x, y = self.body:getPosition()
-
-      local localX, localY = self.tank.body:getLocalPoint(x, y)
-      local angle = math.atan2(localY, localX) + 0.5 * math.pi + self.tank.body:getAngle()
-
-      local directionX = math.cos(angle - 0.5 * math.pi)
-      local directionY = math.sin(angle - 0.5 * math.pi)
 
       local linearVelocityX, linearVelocityY = self.body:getLinearVelocity()
 
@@ -122,12 +124,18 @@ function M:fixedUpdateControl(dt)
 
       self.game.resources.sounds.fire:clone():play()
 
+      local fireDirectionX = utils.clamp(self.tank.aimInputX, -1, 1)
+      local fireDirectionY = -math.sqrt(1 - fireDirectionX * fireDirectionX)
+
+      local worldFireDirectionX, worldFireDirectionY = utils.rotate2(
+        fireDirectionX, fireDirectionY, rightAngle)
+
       local t = utils.clamp(0.5 - 0.5 * self.tank.aimInputY, 0, 1)
       local muzzleVelocity = utils.mix(self.minMuzzleVelocity, self.maxMuzzleVelocity, t)
       local impulse = muzzleVelocity * fireball.body:getMass()
 
-      fireball.body:applyLinearImpulse(impulse * directionX, impulse * directionY)
-      self.body:applyLinearImpulse(-impulse * directionX, -impulse * directionY)
+      fireball.body:applyLinearImpulse(impulse * worldFireDirectionX, impulse * worldFireDirectionY)
+      self.body:applyLinearImpulse(-impulse * worldFireDirectionX, -impulse * worldFireDirectionY)
     else
       self.game.resources.sounds.cooldown:clone():play()
     end

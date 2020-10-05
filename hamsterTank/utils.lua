@@ -1,7 +1,9 @@
 local acos = math.acos
+local cos = math.cos
 local max = math.max
 local min = math.min
 local remove = table.remove
+local sin = math.sin
 local sqrt = math.sqrt
 
 local function sign(x)
@@ -128,6 +130,13 @@ local function dot2(x1, y1, x2, y2)
   return x1 * x2 + y1 * y2
 end
 
+local function rotate2(x, y, angle)
+  local cosAngle = cos(angle)
+  local sinAngle = sin(angle)
+
+  return cosAngle * x - sinAngle * y, sinAngle * x + cosAngle * y
+end
+
 return {
   clamp = clamp,
   decompose2 = decompose2,
@@ -138,6 +147,7 @@ return {
   mixTransforms = mixTransforms,
   normalize2 = normalize2,
   removeLast = removeLast,
+  rotate2 = rotate2,
   sign = sign,
   transformVector = transformVector,
 }
