@@ -111,7 +111,7 @@ function M:fixedUpdateControl(dt)
 
   if self.tank.fireInput and not self.tank.previousFireInput then
     if self.cooldown < 0 then
-      self.cooldown = 3
+      self.cooldown = 0.5
 
       local linearVelocityX, linearVelocityY = self.body:getLinearVelocity()
 
