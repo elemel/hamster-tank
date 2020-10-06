@@ -1,5 +1,6 @@
 local Class = require("hamsterTank.Class")
 local Sprite = require("hamsterTank.Sprite")
+local Track = require("hamsterTank.Track")
 local Turret = require("hamsterTank.Turret")
 local utils = require("hamsterTank.utils")
 local Wheel = require("hamsterTank.Wheel")
@@ -67,6 +68,7 @@ function M:init(game, config)
     imageToLocal = {0, 0, 0, scale, scale, 0.5 * imageWidth, 0.5 * imageHeight},
   })
 
+  self.tracks = {}
   self.turrets = {}
   self.wheels = {}
 
@@ -81,29 +83,46 @@ function M:init(game, config)
     maxMuzzleVelocity = 32,
   })
 
-  Wheel.new(self, {
+  local wheel1 = Wheel.new(self, {
     transform = transform * love.math.newTransform(-1.5, 0.75),
     radius = 0.375,
   })
 
-  Wheel.new(self, {
+  local wheel2 = Wheel.new(self, {
     transform = transform * love.math.newTransform(-0.5, 0.75),
     radius = 0.375,
   })
 
-  Wheel.new(self, {
+  local wheel3 = Wheel.new(self, {
     transform = transform * love.math.newTransform(0.5, 0.75),
     radius = 0.375,
   })
 
-  Wheel.new(self, {
+  local wheel4 = Wheel.new(self, {
     transform = transform * love.math.newTransform(1.5, 0.75),
     radius = 0.375,
+  })
+
+  Track.new(wheel1, wheel2, {
+    maxTorque = 32,
+  })
+
+  Track.new(wheel2, wheel3, {
+    maxTorque = 32,
+  })
+
+  Track.new(wheel3, wheel4, {
+    maxTorque = 32,
   })
 end
 
 function M:destroy()
   self.destroyed = true
+
+  for i = #self.tracks, 1, -1 do
+    self.tracks[i]:destroy()
+    self.tracks[i] = nil
+  end
 
   for i = #self.wheels, 1, -1 do
     self.wheels[i]:destroy()
