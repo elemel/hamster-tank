@@ -30,7 +30,7 @@ function M:init(tank, config)
   self.joint:setSpringDampingRatio(1)
 
   self.joint:setMotorEnabled(true)
-  self.joint:setMaxMotorTorque(16)
+  self.joint:setMaxMotorTorque(32)
 
   local image = self.game.resources.images.hamster.paw
   local imageWidth, imageHeight = image:getDimensions()
