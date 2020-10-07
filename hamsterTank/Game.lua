@@ -62,11 +62,11 @@ function M:init(resources, joystick)
 
   self.gamepadPlayers = {}
 
-  self.wheelRadius = 32
+  self.wheelRadius = 48
   self.wheelGravity = 32
 
   Terrain.new(self, {
-    radius = 0.875 * 0.875 * self.wheelRadius,
+    radius = self.wheelRadius - 8,
     background = true,
     color = {0.25, 0.5, 0.75, 1},
 
@@ -75,12 +75,12 @@ function M:init(resources, joystick)
       originY = love.math.random() * 256,
 
       amplitude = 0.875 * 8,
-      frequency = 1 / 0.875 / 0.875 * 1 / 32,
+      frequency = 1 / 32,
     },
   })
 
   Terrain.new(self, {
-    radius = 0.875 * self.wheelRadius,
+    radius = self.wheelRadius - 4,
     background = true,
     color = {0.25, 0.375, 0.5, 1},
 
@@ -89,7 +89,7 @@ function M:init(resources, joystick)
       originY = love.math.random() * 256,
 
       amplitude = 0.875 * 8,
-      frequency = 1 / 0.875 * 1 / 32,
+      frequency = 1 / 32,
     },
   })
 
