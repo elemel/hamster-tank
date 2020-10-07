@@ -1,5 +1,6 @@
 local Camera = require("hamsterTank.Camera")
 local Class = require("hamsterTank.Class")
+local ComputerControls = require("hamsterTank.ComputerControls")
 local GamepadControls = require("hamsterTank.GamepadControls")
 local KeyboardMouseControls = require("hamsterTank.KeyboardMouseControls")
 local Player = require("hamsterTank.Player")
@@ -16,6 +17,8 @@ function M:init(resources, joystick)
 
   self.fixedDt = 1 / 60
   self.accumulatedDt = 0
+
+  self.fixedTime = 0
 
   self.keyboardMouseControls = KeyboardMouseControls.new({})
   self.cameras = {}
@@ -47,8 +50,11 @@ function M:init(resources, joystick)
   self.nextGroupIndex = 1
   self.nextPlayerIndex = 1
   self.nextGamepadIndex = 1
+  self.nextComputerIndex = 1
 
+  self.computerPlayers = {}
   self.fireballs = {}
+  self.humanPlayers = {}
   self.players = {}
   self.sprites = {}
   self.tanks = {}
@@ -109,6 +115,7 @@ function M:init(resources, joystick)
     self.gamepadPlayers[joystick] = Player.new(self, camera, controls, {
       name = "Player #" .. self:generatePlayerIndex(),
       controlsDescription = "Gamepad #" .. self:generateGamepadIndex(),
+      category = "human",
     })
   else
     local camera = Camera.new(self)
@@ -117,6 +124,17 @@ function M:init(resources, joystick)
     self.keyboardMousePlayer = Player.new(self, camera, controls, {
       name = "Player #" .. self:generatePlayerIndex(),
       controlsDescription = "Keyboard & Mouse",
+      category = "human",
+    })
+  end
+
+  for i = 1, 9 do
+    local controls = ComputerControls.new(self)
+
+    Player.new(self, nil, controls, {
+        name = "Player #" .. self:generatePlayerIndex(),
+        controlsDescription = "Computer #" .. self:generateComputerIndex(),
+        category = "computer",
     })
   end
 
@@ -145,6 +163,8 @@ function M:update(dt)
 end
 
 function M:fixedUpdate(dt)
+  self.fixedTime = self.fixedTime + dt
+
   for _, camera in ipairs(self.cameras) do
     camera:fixedUpdateInterpolation(dt)
   end
@@ -379,6 +399,12 @@ function M:generateGamepadIndex()
   return result
 end
 
+function M:generateComputerIndex()
+  local result = self.nextComputerIndex
+  self.nextComputerIndex = self.nextComputerIndex + 1
+  return result
+end
+
 function M:updateLayout()
   local width, height = love.graphics.getDimensions()
   local scale = 1 / 24
@@ -452,13 +478,14 @@ function M:handleFireballTankCollision(fireballData, tankData)
 end
 
 function M:joystickadded(joystick)
-  if joystick:isGamepad() and #self.players < 4 then
+  if joystick:isGamepad() and #self.humanPlayers < 4 then
     local camera = Camera.new(self)
     local controls = GamepadControls.new(joystick)
 
     self.gamepadPlayers[joystick] = Player.new(self, camera, controls, {
       name = "Player #" .. self:generatePlayerIndex(),
       controlsDescription = "Gamepad #" .. self:generateGamepadIndex(),
+      category = "human",
     })
 
     self:updateLayout()
@@ -470,7 +497,7 @@ function M:joystickremoved(joystick)
     self.gamepadPlayers[joystick]:destroy()
     self.gamepadPlayers[joystick] = nil
 
-    if #self.players == 0 then
+    if #self.humanPlayers == 0 then
       local TitleScreen = require("hamsterTank.TitleScreen")
       screen = TitleScreen.new()
     else
@@ -480,13 +507,14 @@ function M:joystickremoved(joystick)
 end
 
 function M:keypressed(key, scancode, isrepeat)
-  if key == "return" and not self.keyboardMousePlayer and #self.players < 4 then
+  if key == "return" and not self.keyboardMousePlayer and #self.humanPlayers < 4 then
     local camera = Camera.new(self)
     local controls = self.keyboardMouseControls
 
     self.keyboardMousePlayer = Player.new(self, camera, controls, {
       name = "Player #" .. self:generatePlayerIndex(),
       controlsDescription = "Keyboard & Mouse",
+      category = "human",
     })
 
     self:updateLayout()
@@ -495,7 +523,7 @@ function M:keypressed(key, scancode, isrepeat)
       self.keyboardMousePlayer:destroy()
       self.keyboardMousePlayer = nil
 
-      if #self.players == 0 then
+      if #self.humanPlayers == 0 then
         local TitleScreen = require("hamsterTank.TitleScreen")
         screen = TitleScreen.new()
       else
@@ -509,13 +537,14 @@ function M:keypressed(key, scancode, isrepeat)
 end
 
 function M:gamepadpressed(joystick, button)
-  if button == "a" and not self.gamepadPlayers[joystick] and #self.players < 4 then
+  if button == "a" and not self.gamepadPlayers[joystick] and #self.humanPlayers < 4 then
     local camera = Camera.new(self)
     local controls = GamepadControls.new(joystick)
 
     self.gamepadPlayers[joystick] = Player.new(self, camera, controls, {
       name = "Player #" .. self:generatePlayerIndex(),
       controlsDescription = "Gamepad #" .. self:generateGamepadIndex(),
+      category = "human",
     })
 
     self:updateLayout()
@@ -523,7 +552,7 @@ function M:gamepadpressed(joystick, button)
     self.gamepadPlayers[joystick]:destroy()
     self.gamepadPlayers[joystick] = nil
 
-    if #self.players == 0 then
+    if #self.humanPlayers == 0 then
       local TitleScreen = require("hamsterTank.TitleScreen")
       screen = TitleScreen.new()
     else

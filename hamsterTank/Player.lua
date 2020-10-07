@@ -9,6 +9,8 @@ function M:init(game, camera, controls, config)
   self.camera = camera
   self.controls = controls
 
+  self.category = config.category
+
   self.nameText = love.graphics.newText(self.game.font, config.name)
   self.controlsDescriptionText = love.graphics.newText(self.game.font, config.controlsDescription)
 
@@ -22,8 +24,18 @@ function M:init(game, camera, controls, config)
   self.previousRespawnInput = self.respawnInput
 
   self.despawnDelay = 0
-  self.camera.fade = 1
+
+  if self.camera then
+    self.camera.fade = 1
+  end
+
   self.game.players[#self.game.players + 1] = self
+
+  if self.category == "human" then
+    self.game.humanPlayers[#self.game.humanPlayers + 1] = self
+  elseif self.category == "computer" then
+    self.game.computerPlayers[#self.game.computerPlayers + 1] = self
+  end
 end
 
 function M:destroy()
@@ -32,17 +44,30 @@ function M:destroy()
     self.tank = nil
   end
 
+  if self.category == "human" then
+    utils.removeLast(self.game.humanPlayers, self)
+  elseif self.category == "computer" then
+    utils.removeLast(self.game.computerPlayers, self)
+  end
+
   utils.removeLast(self.game.players, self)
-  self.camera:destroy()
+
+  if self.camera then
+    self.camera:destroy()
+  end
 end
 
 function M:fixedUpdateSpawn(dt)
-  self.camera.fade = self.camera.fade - dt
+  if self.camera then
+    self.camera.fade = self.camera.fade - dt
+  end
 
   if self.tank and (self.tank.dead or self.tank.destroyed) then
     self.despawnDelay = self.despawnDelay - dt
 
-    self.camera.fade = 1 - self.despawnDelay
+    if self.camera then
+      self.camera.fade = 1 - self.despawnDelay
+    end
 
     if self.despawnDelay < 0 then
       self.tank = nil
@@ -103,8 +128,10 @@ function M:fixedUpdateSpawn(dt)
       local x, y = self.tank.body:getPosition()
       local angle = self.tank.body:getAngle()
 
-      self:fixedUpdateCamera(dt)
-      self.camera.previousWorldToScreen:reset():apply(self.camera.worldToScreen)
+      if self.camera then
+        self:fixedUpdateCamera(dt)
+        self.camera.previousWorldToScreen:reset():apply(self.camera.worldToScreen)
+      end
     end
   end
 end
@@ -133,7 +160,7 @@ function M:fixedUpdateInput(dt)
 end
 
 function M:fixedUpdateCamera(dt)
-  if self.tank and not self.tank.destroyed then
+  if self.tank and not self.tank.destroyed and self.camera then
     local x, y = self.tank.body:getPosition()
     local downX, downY = utils.normalize2(x, y)
     local angle = math.atan2(y, x) - 0.5 * math.pi
