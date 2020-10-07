@@ -28,6 +28,7 @@ function M:init(resources, joystick)
 
   self.collisionHandlers = {
     fireball = {
+      fireball = self.handleFireballFireballCollision,
       tank = self.handleFireballTankCollision,
       terrain = self.handleFireballTerrainCollision,
     },
@@ -474,6 +475,16 @@ function M:handleFireballTankCollision(fireballData, tankData)
     end
 
     self.resources.sounds.fireballTankCollision:clone():play()
+  end
+end
+
+function M:handleFireballFireballCollision(fireballData1, fireballData2)
+  local fireball1 = fireballData1.fireball
+  local fireball2 = fireballData2.fireball
+
+  if not fireball1.dead and not fireball2.dead then
+    fireball1:setDead(true)
+    fireball2:setDead(true)
   end
 end
 
