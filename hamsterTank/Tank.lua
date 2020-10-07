@@ -74,15 +74,6 @@ function M:init(game, config)
 
   self.game.tanks[#self.game.tanks + 1] = self
 
-  Turret.new(self, {
-    transform = {0, -0.75, 0},
-    radius = 0.5,
-    maxDistance = 0.5,
-
-    minMuzzleVelocity = 16,
-    maxMuzzleVelocity = 32,
-  })
-
   local wheel1 = Wheel.new(self, {
     transform = transform * love.math.newTransform(-1.5, 0.75),
     radius = 0.375,
@@ -114,10 +105,24 @@ function M:init(game, config)
   Track.new(wheel3, wheel4, {
     maxTorque = 32,
   })
+
+  Turret.new(self, {
+    transform = {0, -0.5, 0},
+    radius = 0.5,
+    maxDistance = 0.5,
+
+    minMuzzleVelocity = 16,
+    maxMuzzleVelocity = 32,
+  })
 end
 
 function M:destroy()
   self.destroyed = true
+
+  for i = #self.turrets, 1, -1 do
+    self.turrets[i]:destroy()
+    self.turrets[i] = nil
+  end
 
   for i = #self.tracks, 1, -1 do
     self.tracks[i]:destroy()
@@ -127,11 +132,6 @@ function M:destroy()
   for i = #self.wheels, 1, -1 do
     self.wheels[i]:destroy()
     self.wheels[i] = nil
-  end
-
-  for i = #self.turrets, 1, -1 do
-    self.turrets[i]:destroy()
-    self.turrets[i] = nil
   end
 
   utils.removeLast(self.game.tanks, self)

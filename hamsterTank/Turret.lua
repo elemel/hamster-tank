@@ -39,11 +39,18 @@ function M:init(tank, config)
 
   self.distanceJoints = {}
 
-  for _, localAnchor in ipairs({{-0.75, 0}, {0, 0}, {0.75, 0}}) do
+  local localAnchors = {
+    {-self.maxDistance, 0},
+    {0, -self.maxDistance},
+    {self.maxDistance, 0},
+    {0, self.maxDistance},
+  }
+
+  for _, localAnchor in ipairs(localAnchors) do
     local anchorX, anchorY = self.tank.body:getWorldPoint(unpack(localAnchor))
     local joint = love.physics.newDistanceJoint(self.tank.body, self.body, anchorX, anchorY, x, y)
 
-    joint:setFrequency(4)
+    joint:setFrequency(2)
     joint:setDampingRatio(1)
 
     self.distanceJoints[#self.distanceJoints + 1] = joint
@@ -124,11 +131,7 @@ function M:fixedUpdateControl(dt)
 
       self.game.resources.sounds.fire:clone():play()
 
-      local fireDirectionX = utils.clamp(self.tank.aimInputX, -1, 1)
-      local fireDirectionY = -math.sqrt(1 - fireDirectionX * fireDirectionX)
-
-      local worldFireDirectionX, worldFireDirectionY = utils.rotate2(
-        fireDirectionX, fireDirectionY, rightAngle)
+      local worldFireDirectionX, worldFireDirectionY = self:getWorldFireDirection()
 
       local t = utils.clamp(0.5 - 0.5 * self.tank.aimInputY, 0, 1)
       local muzzleVelocity = utils.mix(self.minMuzzleVelocity, self.maxMuzzleVelocity, t)
@@ -142,10 +145,24 @@ function M:fixedUpdateControl(dt)
   end
 end
 
+function M:getWorldFireDirection()
+  local x, y = self.body:getPosition()
+  local upX, upY = utils.normalize2(-x, -y)
+  local rightAngle = math.atan2(upY, upX) + 0.5 * math.pi
+
+  local aimInputX = self.tank.aimInputX
+  local aimInputY = self.tank.aimInputY
+
+  local fireAngle = math.atan2(aimInputY - 1, aimInputX) + rightAngle
+  return math.cos(fireAngle), math.sin(fireAngle)
+end
+
 function M:fixedUpdateAnimation(dt)
   local x, y = self.body:getPosition()
-  local localX, localY = self.tank.body:getLocalPoint(x, y)
-  local angle = math.atan2(localY, localX) + 0.5 * math.pi + self.tank.body:getAngle()
+
+  local worldFireDirectionX, worldFireDirectionY = self:getWorldFireDirection()
+  local angle = math.atan2(worldFireDirectionY, worldFireDirectionX) + 0.5 * math.pi
+
   self.sprite:setLocalToWorld(x, y, angle)
 end
 
