@@ -6,8 +6,11 @@ local M = Class.new()
 function M:init(tank, config)
   self.game = tank.game
   self.dead = false
+  self.timeToLive = 4
   self.timeOfDeath = 0
-  self.despawnDelay = 8
+  self.fadeTime = 0.25
+  self.fireParticleLifetime = 0.25
+  self.smokeParticleLifetime = 0.5
 
   local x, y, angle = unpack(config.transform)
 
@@ -31,9 +34,8 @@ function M:init(tank, config)
 
   self.fireParticles = love.graphics.newParticleSystem(fireImage, 64)
 
-  self.fireParticles:setParticleLifetime(0.25)
+  self.fireParticles:setParticleLifetime(self.fireParticleLifetime)
   self.fireParticles:setEmissionRate(256)
-  self.fireParticles:setEmitterLifetime(4)
   self.fireParticles:setLinearDamping(1)
 
   self.fireParticles:setColors(
@@ -51,9 +53,8 @@ function M:init(tank, config)
 
   self.smokeParticles = love.graphics.newParticleSystem(smokeImage, 64)
 
-  self.smokeParticles:setParticleLifetime(0.5)
+  self.smokeParticles:setParticleLifetime(self.smokeParticleLifetime)
   self.smokeParticles:setEmissionRate(128)
-  self.smokeParticles:setEmitterLifetime(4)
   self.smokeParticles:setLinearDamping(4)
 
   self.smokeParticles:setColors(
@@ -83,7 +84,8 @@ end
 
 function M:fixedUpdateParticles(dt)
   if self.dead then
-    local t = utils.smoothstep(self.timeOfDeath, self.timeOfDeath + 0.25, self.game.fixedTime)
+    local t = utils.smoothstep(
+      self.timeOfDeath, self.timeOfDeath + self.fadeTime, self.game.fixedTime)
 
     self.fireParticles:setEmissionRate(utils.mix(256, 0, t))
     self.smokeParticles:setEmissionRate(utils.mix(128, 0, t))
@@ -139,9 +141,17 @@ function M:setDead(dead)
 end
 
 function M:fixedUpdateDespawn(dt)
-  self.despawnDelay = self.despawnDelay - dt
+  if not self.dead then
+    self.timeToLive = self.timeToLive - dt
 
-  if self.despawnDelay < 0 then
+    if self.timeToLive < 0 then
+      self:setDead(true)
+    end
+  end
+
+  local maxParticleLifetime = math.max(self.fireParticleLifetime, self.smokeParticleLifetime)
+
+  if self.dead and self.game.fixedTime - self.timeOfDeath > self.fadeTime + maxParticleLifetime then
     self:destroy()
   end
 end
