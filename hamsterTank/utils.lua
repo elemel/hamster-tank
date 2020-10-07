@@ -137,6 +137,12 @@ local function rotate2(x, y, angle)
   return cosAngle * x - sinAngle * y, sinAngle * x + cosAngle * y
 end
 
+-- https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/smoothstep.xhtml
+local function smoothstep(x1, x2, x)
+  local t = clamp((x - x1) / (x2 - x1), 0, 1)
+  return t * t * (3 - 2 * t)
+end
+
 return {
   clamp = clamp,
   decompose2 = decompose2,
@@ -149,5 +155,6 @@ return {
   removeLast = removeLast,
   rotate2 = rotate2,
   sign = sign,
+  smoothstep = smoothstep,
   transformVector = transformVector,
 }

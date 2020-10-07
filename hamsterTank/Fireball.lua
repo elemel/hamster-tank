@@ -6,6 +6,7 @@ local M = Class.new()
 function M:init(tank, config)
   self.game = tank.game
   self.dead = false
+  self.timeOfDeath = 0
   self.despawnDelay = 8
 
   local x, y, angle = unpack(config.transform)
@@ -56,10 +57,10 @@ function M:init(tank, config)
   self.smokeParticles:setLinearDamping(4)
 
   self.smokeParticles:setColors(
-    0.25, 0.25, 0.25, 0.125,
-    0.25, 0.25, 0.25, 0.0625,
-    0.25, 0.25, 0.25, 0.03125,
-    0.25, 0.25, 0.25, 0)
+    0.5, 0.5, 0.5, 0.125,
+    0.5, 0.5, 0.5, 0.0625,
+    0.5, 0.5, 0.5, 0.03125,
+    0.5, 0.5, 0.5, 0)
 
   self.smokeParticles:setEmissionArea("ellipse", 0.5, 0.5)
   self.smokeParticles:setSizes(2 / smokeImageHeight)
@@ -81,6 +82,13 @@ function M:destroy()
 end
 
 function M:fixedUpdateParticles(dt)
+  if self.dead then
+    local t = utils.smoothstep(self.timeOfDeath, self.timeOfDeath + 0.25, self.game.fixedTime)
+
+    self.fireParticles:setEmissionRate(utils.mix(256, 0, t))
+    self.smokeParticles:setEmissionRate(utils.mix(128, 0, t))
+  end
+
   self:controlFireParticles()
   self:controlSmokeParticles()
 end
@@ -126,6 +134,7 @@ function M:setDead(dead)
     return
   end
 
+  self.timeOfDeath = self.game.fixedTime
   self.fixture:setSensor(true)
 end
 
