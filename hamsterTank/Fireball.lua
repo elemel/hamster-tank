@@ -18,6 +18,7 @@ function M:init(tank, config)
   local shape = love.physics.newCircleShape(0, 0, 0.25)
   self.fixture = love.physics.newFixture(self.body, shape)
   self.fixture:setGroupIndex(-tank.groupIndex)
+  self.fixture:setRestitution(0.25)
 
   self.fixture:setUserData({
     collisionType = "fireball",
@@ -41,27 +42,27 @@ function M:init(tank, config)
     0.25, 0, 0, 0.5,
     0, 0, 0, 0.5)
 
-  self.fireParticles:setEmissionArea("ellipse", 0.25, 0.25)
+  self.fireParticles:setEmissionArea("ellipse", 0.375, 0.375)
   self.fireParticles:setSizes(0.75 / fireImageHeight)
 
   local smokeImage = self.game.resources.images.particles.smoke
   local smokeImageWidth, smokeImageHeight = smokeImage:getDimensions()
 
-  self.smokeParticles = love.graphics.newParticleSystem(smokeImage, 16)
+  self.smokeParticles = love.graphics.newParticleSystem(smokeImage, 64)
 
   self.smokeParticles:setParticleLifetime(0.5)
-  self.smokeParticles:setEmissionRate(32)
+  self.smokeParticles:setEmissionRate(128)
   self.smokeParticles:setEmitterLifetime(4)
   self.smokeParticles:setLinearDamping(4)
 
   self.smokeParticles:setColors(
-    0, 0, 0, 0,
-    0, 0, 0, 0.25,
-    0, 0, 0, 0.125,
-    0, 0, 0, 0)
+    0.25, 0.25, 0.25, 0.125,
+    0.25, 0.25, 0.25, 0.0625,
+    0.25, 0.25, 0.25, 0.03125,
+    0.25, 0.25, 0.25, 0)
 
-  self.smokeParticles:setEmissionArea("ellipse", 0.25, 0.25)
-  self.smokeParticles:setSizes(1.5 / smokeImageHeight)
+  self.smokeParticles:setEmissionArea("ellipse", 0.5, 0.5)
+  self.smokeParticles:setSizes(2 / smokeImageHeight)
 
   self:controlFireParticles()
   self:controlSmokeParticles()
@@ -106,7 +107,6 @@ function M:controlSmokeParticles()
 
   self.smokeParticles:setPosition(x, y)
   self.smokeParticles:setDirection(math.atan2(linearVelocityY, linearVelocityX))
-  self.smokeParticles:setSpeed(utils.length2(linearVelocityX, linearVelocityY))
   self.smokeParticles:setLinearAcceleration(-downX * linearAcceleration, -downY * linearAcceleration)
 end
 
