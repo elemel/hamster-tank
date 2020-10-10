@@ -321,7 +321,9 @@ function M:draw()
     love.graphics.replaceTransform(camera.worldToScreen)
     local _, _, _, scale = utils.decompose2(camera.worldToScreen)
     love.graphics.setLineWidth(1 / scale)
-    -- self:debugDrawPhysics()
+
+    -- self:debugDrawFixtures()
+    -- self:debugDrawJoints()
 
     love.graphics.pop()
 
@@ -372,7 +374,7 @@ function M:draw()
   end
 end
 
-function M:debugDrawPhysics()
+function M:debugDrawFixtures()
   love.graphics.push("all")
   love.graphics.setColor(0, 1, 0, 1)
 
@@ -406,6 +408,18 @@ function M:debugDrawPhysics()
         love.graphics.polygon("line", body:getWorldPoints(shape:getPoints()))
       end
     end
+  end
+
+  love.graphics.pop()
+end
+
+function M:debugDrawJoints()
+  love.graphics.push("all")
+  love.graphics.setColor(0, 1, 0, 1)
+
+  for _, joint in ipairs(self.world:getJoints()) do
+    local x1, y1, x2, y2 = joint:getAnchors()
+    love.graphics.line(x1, y1, x2, y2)
   end
 
   love.graphics.pop()
