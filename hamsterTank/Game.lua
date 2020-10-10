@@ -162,7 +162,7 @@ function M:init(resources, joystick)
     })
   end
 
-  for i = 1, 9 do
+  for i = 1, 4 do
     local controls = ComputerControls.new(self)
 
     Player.new(self, nil, controls, {
