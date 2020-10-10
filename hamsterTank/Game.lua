@@ -66,10 +66,29 @@ function M:init(resources, joystick)
   self.wheelRadius = 48
   self.wheelGravity = 32
 
+  local skyColor = {0.25, 0.75, 1, 1}
+  local foregroundTerrainColor = {0.625, 0.75, 0.5, 1}
+  local backgroundTerrainColor = {0.5, 0.5, 0.5, 1}
+
+  local terrainColor2 = {utils.mix4(
+    backgroundTerrainColor[1], backgroundTerrainColor[2], backgroundTerrainColor[3], backgroundTerrainColor[4],
+    skyColor[1], skyColor[2], skyColor[3], skyColor[4],
+    0.25)}
+
+  local terrainColor3 = {utils.mix4(
+    backgroundTerrainColor[1], backgroundTerrainColor[2], backgroundTerrainColor[3], backgroundTerrainColor[4],
+    skyColor[1], skyColor[2], skyColor[3], skyColor[4],
+    0.5)}
+
+  local terrainColor4 = {utils.mix4(
+    backgroundTerrainColor[1], backgroundTerrainColor[2], backgroundTerrainColor[3], backgroundTerrainColor[4],
+    skyColor[1], skyColor[2], skyColor[3], skyColor[4],
+    0.75)}
+
   Terrain.new(self, {
-    radius = self.wheelRadius - 8,
+    radius = self.wheelRadius - 6,
     background = true,
-    color = {0.25, 0.5, 0.75, 1},
+    color = terrainColor4,
 
     noise = {
       originX = love.math.random() * 256,
@@ -83,7 +102,21 @@ function M:init(resources, joystick)
   Terrain.new(self, {
     radius = self.wheelRadius - 4,
     background = true,
-    color = {0.25, 0.375, 0.5, 1},
+    color = terrainColor3,
+
+    noise = {
+      originX = love.math.random() * 256,
+      originY = love.math.random() * 256,
+
+      amplitude = 0.875 * 8,
+      frequency = 1 / 32,
+    },
+  })
+
+  Terrain.new(self, {
+    radius = self.wheelRadius - 2,
+    background = true,
+    color = terrainColor2,
 
     noise = {
       originX = love.math.random() * 256,
@@ -96,7 +129,7 @@ function M:init(resources, joystick)
 
   Terrain.new(self, {
     radius = self.wheelRadius,
-    color = {0.625, 0.625, 0.375, 1},
+    color = foregroundTerrainColor,
 
     noise = {
       originX = love.math.random() * 256,
@@ -260,7 +293,7 @@ function M:draw()
     local _, _, _, scale = utils.decompose2(camera.interpolatedWorldToScreen)
     love.graphics.setLineWidth(1 / scale)
 
-    for _, terrain in ipairs(self.terrains) do
+    for i, terrain in ipairs(self.terrains) do
       love.graphics.draw(terrain.mesh)
     end
 

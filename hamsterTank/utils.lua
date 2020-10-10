@@ -122,6 +122,19 @@ local function mix(x1, x2, t)
   return (1 - t) * x1 + t * x2
 end
 
+local function mix4(x1, y1, z1, w1, x2, y2, z2, w2, tx, ty, tz, tw)
+  ty = ty or tx
+  tz = tz or tx
+  tw = tw or tx
+
+  local x = (1 - tx) * x1 + tx * x2
+  local y = (1 - ty) * y1 + ty * y2
+  local z = (1 - tz) * z1 + tz * z2
+  local w = (1 - tw) * w1 + tw * w2
+
+  return x, y, z, w
+end
+
 local function clamp(x, x1, x2)
   return min(max(x, x1), x2)
 end
@@ -150,6 +163,7 @@ return {
   dot2 = dot2,
   length2 = length2,
   mix = mix,
+  mix4 = mix4,
   mixTransforms = mixTransforms,
   normalize2 = normalize2,
   removeLast = removeLast,
