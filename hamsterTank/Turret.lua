@@ -39,19 +39,25 @@ function M:init(tank, config)
 
   self.distanceJoints = {}
 
-  local localAnchors = {
-    {-self.maxDistance, 0},
-    {0, -self.maxDistance},
-    {self.maxDistance, 0},
-    {0, self.maxDistance},
+  local localAnchorDirections = {
+    {-1, 0},
+    {0, -1},
+    {1, 0},
+    {0, 1},
   }
 
-  for _, localAnchor in ipairs(localAnchors) do
-    local anchorX, anchorY = self.tank.body:getWorldPoint(unpack(localAnchor))
+  for _, localAnchorDirection in ipairs(localAnchorDirections) do
+    local localAnchorDirectionX = localAnchorDirection[1]
+    local localAnchorDirectionY = localAnchorDirection[2]
+
+    local localAnchorX = self.localX + localAnchorDirectionX * 2 * self.maxDistance
+    local localAnchorY = self.localY + localAnchorDirectionY * 2 * self.maxDistance
+
+    local anchorX, anchorY = self.tank.body:getWorldPoint(localAnchorX, localAnchorY)
     local joint = love.physics.newDistanceJoint(self.tank.body, self.body, anchorX, anchorY, x, y)
 
     joint:setFrequency(2)
-    joint:setDampingRatio(1)
+    joint:setDampingRatio(0.25)
 
     self.distanceJoints[#self.distanceJoints + 1] = joint
   end
@@ -150,10 +156,10 @@ function M:getWorldFireDirection()
   local upX, upY = utils.normalize2(-x, -y)
   local rightAngle = math.atan2(upY, upX) + 0.5 * math.pi
 
-  local aimInputX = self.tank.aimInputX
-  local aimInputY = self.tank.aimInputY
+  local aimInputX = utils.clamp(self.tank.aimInputX, -1, 1)
+  local aimInputY = -math.sqrt(1 - aimInputX * aimInputX)
 
-  local fireAngle = math.atan2(aimInputY - 1, aimInputX) + rightAngle
+  local fireAngle = math.atan2(aimInputY, aimInputX) + rightAngle
   return math.cos(fireAngle), math.sin(fireAngle)
 end
 

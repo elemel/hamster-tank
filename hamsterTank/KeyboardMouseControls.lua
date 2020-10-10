@@ -22,7 +22,7 @@ function M:init(config)
   self.accumulatedMouseDx = 0
   self.accumulatedMouseDy = 0
 
-  self.mouseSensitivity = config.mouseSensitivity or 1 / 32
+  self.mouseSensitivity = config.mouseSensitivity or 1 / 256
 end
 
 function M:getJumpInput()

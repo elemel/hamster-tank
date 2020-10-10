@@ -190,19 +190,22 @@ function M:fixedUpdateControl(dt)
       local jumpVelocity = 16
       local impulse = jumpVelocity * self:getTotalMass()
       self.body:applyLinearImpulse(-downX * impulse, -downY * impulse)
-
-      local bodyUpX, bodyUpY = self.body:getWorldVector(0, -1)
-      local upsideDownAlignment = utils.dot2(bodyUpX, bodyUpY, downX, downY)
-
-      local leftX = -downY
-      local leftY = downX
-
-      local leftAlignment = utils.dot2(bodyUpX, bodyUpY, leftX, leftY)
-
-      local angularVelocity = 8 * utils.sign(leftAlignment) * math.max(upsideDownAlignment, 0)
-      self.body:setAngularVelocity(angularVelocity)
     end
   end
+
+  local x, y = self.body:getPosition()
+  local gravityDownAngle = math.atan2(y, x)
+  local angle = self.body:getAngle()
+  local targetAngle = gravityDownAngle + math.atan2(self.moveInputY, 0)
+  local angularVelocity = self.body:getAngularVelocity()
+  local angularVelocityBias = utils.clamp(-angularVelocity, -0.5 * math.pi, 0.5 * math.pi)
+
+  local angularError = (targetAngle - angle + angularVelocityBias + math.pi) % (2 * math.pi) - math.pi - angularVelocityBias
+  local angularVelocityError = -angularVelocity
+
+  local torque = math.abs(self.moveInputY) * (64 * angularError + 16 * angularVelocityError)
+
+  self.body:applyTorque(torque)
 
   for _, turret in ipairs(self.turrets) do
     turret:fixedUpdateControl(dt)
