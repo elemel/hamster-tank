@@ -7,11 +7,12 @@ local Wheel = require("hamsterTank.Wheel")
 
 local M = Class.new()
 
-function M:init(game, config)
+function M:init(game, team, config)
   self.destroyed = false
   self.dead = false
 
   self.game = game
+  self.team = team
   self.groupIndex = self.game:generateGroupIndex()
 
   self.moveInputX = 0
@@ -64,6 +65,8 @@ function M:init(game, config)
   local scale = 2 / imageHeight
 
   self.sprite = Sprite.new(self.game, image, {
+    color = self.team.tintColor,
+
     localToWorld = {x, y, angle},
     imageToLocal = {0, 0, 0, scale, scale, 0.5 * imageWidth, 0.5 * imageHeight},
   })

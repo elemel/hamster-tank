@@ -67,6 +67,8 @@ function M:init(tank, config)
   local scale = 1.5 / imageHeight
 
   self.sprite = Sprite.new(self.game, image, {
+    color = self.tank.team.tintColor,
+
     localToWorld = {x, y, angle},
     imageToLocal = {0, 0, 0, scale, scale, 0.5 * imageWidth, 0.5 * imageHeight},
   })
@@ -133,6 +135,8 @@ function M:fixedUpdateControl(dt)
 
         linearVelocityX = linearVelocityX,
         linearVelocityY = linearVelocityY,
+
+        fireColors = self.tank.team.fireColors,
       })
 
       self.game.resources.sounds.fire:clone():play()

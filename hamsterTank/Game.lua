@@ -298,8 +298,11 @@ function M:draw()
     end
 
     for _, sprite in ipairs(self.sprites) do
+      love.graphics.setColor(sprite.color)
       love.graphics.draw(sprite.image, sprite.interpolatedImageToWorld)
     end
+
+    love.graphics.setColor(1, 1, 1, 1)
 
     love.graphics.push("all")
 
@@ -616,6 +619,24 @@ function M:gamepadpressed(joystick, button)
     else
       self:updateLayout()
     end
+  end
+end
+
+function M:generateTeamColor()
+  i = love.math.random(1, 6)
+
+  if i == 1 then
+    return 1, 0.75, 0.5
+  elseif i == 2 then
+    return 1, 0.5, 0.75
+  elseif i == 3 then
+    return 0.75, 1, 0.5
+  elseif i == 4 then
+    return 0.5, 1, 0.75
+  elseif i == 5 then
+    return 0.75, 0.5, 1
+  else
+    return 0.5, 0.75, 1
   end
 end
 

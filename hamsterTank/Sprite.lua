@@ -6,6 +6,7 @@ local M = Class.new()
 function M:init(game, image, config)
   self.game = game
   self.image = image
+  self.color = config.color or {1, 1, 1, 1}
 
   self.imageToLocal = love.math.newTransform(unpack(config.imageToLocal))
   self.localToWorld = love.math.newTransform(unpack(config.localToWorld))

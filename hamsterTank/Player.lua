@@ -1,5 +1,6 @@
 local Class = require("hamsterTank.Class")
 local Tank = require("hamsterTank.Tank")
+local Team = require("hamsterTank.Team")
 local utils = require("hamsterTank.utils")
 
 local M = Class.new()
@@ -8,6 +9,7 @@ function M:init(game, camera, controls, config)
   self.game = game
   self.camera = camera
   self.controls = controls
+  self.team = Team.new(self.game, {})
 
   self.category = config.category
 
@@ -118,7 +120,7 @@ function M:fixedUpdateSpawn(dt)
 
       local spawnAngle = math.atan2(intersectionNormalY, intersectionNormalX) + 0.5 * math.pi
 
-      self.tank = Tank.new(self.game, {
+      self.tank = Tank.new(self.game, self.team, {
         transform = {spawnX, spawnY, spawnAngle},
 
         jumpInput = self.controls:getJumpInput(),

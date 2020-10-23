@@ -38,13 +38,15 @@ function M:init(tank, config)
   self.fireParticles:setEmissionRate(256)
   self.fireParticles:setLinearDamping(1)
 
-  self.fireParticles:setColors(
+  local fireColors = config.fireColors or {
     1, 0.75, 0.5, 0.5,
     0.75, 0.5, 0.25, 0.5,
     0.5, 0.25, 0, 0.5,
     0.25, 0, 0, 0.5,
-    0, 0, 0, 0.5)
+    0, 0, 0, 0.5,
+  }
 
+  self.fireParticles:setColors(unpack(fireColors))
   self.fireParticles:setEmissionArea("ellipse", 0.375, 0.375)
   self.fireParticles:setSizes(0.75 / fireImageHeight)
 
@@ -58,10 +60,10 @@ function M:init(tank, config)
   self.smokeParticles:setLinearDamping(4)
 
   self.smokeParticles:setColors(
-    0.5, 0.5, 0.5, 0.125,
-    0.5, 0.5, 0.5, 0.0625,
-    0.5, 0.5, 0.5, 0.03125,
-    0.5, 0.5, 0.5, 0)
+    0.25, 0.25, 0.25, 0.125,
+    0.25, 0.25, 0.25, 0.0625,
+    0.25, 0.25, 0.25, 0.03125,
+    0.25, 0.25, 0.25, 0)
 
   self.smokeParticles:setEmissionArea("ellipse", 0.5, 0.5)
   self.smokeParticles:setSizes(2 / smokeImageHeight)
